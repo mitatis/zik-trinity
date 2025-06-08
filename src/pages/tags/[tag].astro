@@ -23,6 +23,7 @@ export async function getStaticPaths() {
       props: { posts: filteredPosts },
     };
   });
+  
 }
 
 const { tag } = Astro.params as { tag: string }; // Explicitly type tag as string
@@ -61,7 +62,7 @@ const relatedTags = [...new Set(
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
-          <span>Back to all tags</span>
+          <span>主题列表</span>
           <span class="block max-w-0 group-hover:max-w-full transition-all duration-300 h-0.5 bg-zinc-300 dark:bg-zinc-700"></span>
         </a>
         
@@ -83,7 +84,7 @@ const relatedTags = [...new Set(
         </div>
         
         <p class="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 mt-4 max-w-2xl mx-auto sm:mx-0">
-          Exploring <span class="font-medium text-zinc-900 dark:text-zinc-100">{sortedPosts.length}</span> articles tagged with <span class="font-medium text-zinc-900 dark:text-zinc-100">"{tag}"</span>
+           <span class="font-medium text-zinc-900 dark:text-zinc-100">{sortedPosts.length}</span> 篇带有 <span class="font-medium text-zinc-900 dark:text-zinc-100">"{tag}"</span>标签的文章
         </p>
       </div>
     </div>
@@ -91,7 +92,7 @@ const relatedTags = [...new Set(
     <!-- Related tags section - chuyển sang màu zinc -->
     {relatedTags.length > 0 && (
       <div class="mb-8 sm:mb-12 overflow-x-auto pb-4 hide-scrollbar">
-        <h2 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-3 text-center sm:text-left">Related topics</h2>
+        <h2 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-3 text-center sm:text-left">相关主题</h2>
         <div class="flex gap-2 flex-nowrap justify-center sm:justify-start">
           {relatedTags.map(relatedTag => (
             <a 
@@ -194,8 +195,8 @@ const relatedTags = [...new Set(
                   tabindex="-1"
                 >
                   <span class="relative overflow-hidden inline-block">
-                    <span class="block transition-transform duration-300 group-hover:-translate-y-full">Read article</span>
-                    <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">Explore now</span>
+                    <span class="block transition-transform duration-300 group-hover:-translate-y-full">阅读文章</span>
+                    <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">立即开启</span>
                   </span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />

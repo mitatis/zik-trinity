@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import likesData from '/data/likes.json';
+
 
 const allPosts = await getCollection('blog') || [];
 const sortedPosts = allPosts.sort(
@@ -24,7 +26,7 @@ const totalPosts = sortedPosts.length;
 const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
 ---
 
-<BaseLayout title="Blog">
+<BaseLayout title="文章列表">
   <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
     <!-- Enhanced header with search - improved responsive spacing -->
     <div class="relative mb-12 sm:mb-20">
@@ -34,11 +36,11 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
       
       <div class="relative text-center">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4">
-          Journal
+          文章
         </h1>
         
         <p class="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-6 sm:mb-10 max-w-2xl mx-auto">
-          Thoughts, ideas, and explorations on design and technology.
+          用文字探寻思维的边界
         </p>
       </div>
     </div>
@@ -62,12 +64,12 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
               )}
               
               <div class="flex-1 flex flex-col justify-center">
-                <div class="flex items-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 gap-2 mb-3 justify-center md:justify-start">
-                  <span class="font-medium uppercase tracking-wider">Featured</span>
+                <div class="flex items-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 gap-2 mb-3 justify-start md:justify-start">
+                  <span class="font-medium uppercase tracking-wider">最新</span>
                   <span class="h-px w-6 sm:w-8 bg-zinc-300 dark:bg-zinc-700"></span>
                   {sortedPosts[0].data.pubDate && (
                     <time datetime={sortedPosts[0].data.pubDate.toISOString()}>
-                      {sortedPosts[0].data.pubDate.toLocaleDateString('en-US', { 
+                      {sortedPosts[0].data.pubDate.toLocaleDateString('zh', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
@@ -82,20 +84,20 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
                   </a>
                 </h2>
                 
-                <p class="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4 sm:mb-6 line-clamp-3 text-center md:text-left">
+                <p class="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4 sm:mb-6 line-clamp-3 text-left md:text-left">
                   {sortedPosts[0].data.description}
                 </p>
                 
                 <!-- Improved mobile layout for featured post metadata -->
-                <div class="flex items-center gap-3 sm:gap-4 justify-center md:justify-start flex-wrap">
+                <div class="flex items-center gap-3 sm:gap-4 justify-start md:justify-start flex-wrap">
                   <div class="flex items-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                     <span class="inline-flex items-center">
-                      {sortedPosts[0].data.readingTime || "5 min read"}
+                      {sortedPosts[0].data.readingTime}
                     </span>
                   </div>
                   
                   {sortedPosts[0].data.tags && (
-                    <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                    <div class="flex flex-wrap gap-2 justify-start md:justify-start">
                       {sortedPosts[0].data.tags.slice(0, 2).map((tag) => (
                         <span class="px-2 sm:px-3 py-1 text-xs uppercase tracking-wider border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
                           {tag}
@@ -113,7 +115,7 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
       <!-- Improved sidebar for mobile -->
       <div class="md:col-span-3 relative">
         <div class="md:sticky md:top-24 space-y-4 mb-8 md:mb-0">
-          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4 uppercase tracking-wider text-center md:text-left">Archive</h3>
+          <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4 uppercase tracking-wider text-center md:text-left">YEAR</h3>
           
           <!-- Horizontal scrollable archive on mobile, vertical on desktop -->
           <div class="flex md:flex-col overflow-x-auto md:overflow-visible pb-4 md:pb-0 hide-scrollbar">
@@ -124,7 +126,8 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
               >
                 <span class="text-base md:text-lg font-medium text-zinc-900 dark:text-zinc-100">{year}</span>
                 <span class="ml-2 md:ml-auto text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-                  {postsByYear[year].length} post{postsByYear[year].length !== 1 ? 's' : ''}
+                  {postsByYear[year].length} 篇
+                  {/* {postsByYear[year].length !== 1 ? 's' : ''} */}
                 </span>
               </a>
             ))}
@@ -155,10 +158,10 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
                   )}
                   
                   <div class="flex-1 flex flex-col">
-                    <div class="flex items-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 gap-3 sm:gap-4 mb-2 sm:mb-3 justify-center md:justify-start flex-wrap">
+                    <div class="flex items-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 gap-3 sm:gap-4 mb-2 sm:mb-3 justify-start md:justify-start flex-wrap">
                       {post.data.pubDate && (
                         <time datetime={post.data.pubDate.toISOString()} class="flex items-center">
-                          {post.data.pubDate.toLocaleDateString('en-US', { 
+                          {post.data.pubDate.toLocaleDateString('zh', { 
                             month: 'short', 
                             day: 'numeric' 
                           })}
@@ -169,20 +172,25 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
                           {post.data.readingTime}
                         </span>
                       )}
+                      <span class="flex items-center gap-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 sm:w-4" color="#f22955">
+                        <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z" />
+                      </svg>
+                      {likesData[post.slug] || 0}</span>
                     </div>
                     
-                    <h3 class="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2 sm:mb-3 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors text-center md:text-left">
+                    <h3 class="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2 sm:mb-3 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors text-left md:text-left">
                       <a href={`/blog/${post.slug}/`} class="before:absolute before:inset-0">
                         {post.data.title}
                       </a>
                     </h3>
                     
-                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-2 flex-grow text-center md:text-left">
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-2 flex-grow text-left md:text-left">
                       {post.data.description}
                     </p>
                     
                     {post.data.tags && (
-                      <div class="flex flex-wrap gap-2 mt-auto justify-center md:justify-start">
+                      <div class="flex flex-wrap gap-2 mt-auto justify-start md:justify-start">
                         {post.data.tags.slice(0, 2).map((tag) => (
                           <span class="px-2 sm:px-3 py-1 text-xs uppercase tracking-wider border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
                             {tag}

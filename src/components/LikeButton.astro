@@ -1,0 +1,102 @@
+---
+/**
+ * LikeButton.astro
+ * - 接收 prop: slug（字符串），作为文章/页面的唯一标识
+ */
+const { slug } = Astro.props;
+---
+<style>
+  /* 你可以根据需要自行调整样式 */
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .like-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .like-btn.liked {
+    color: #f22955;
+  }
+  .like-btn svg {
+    fill: none;
+    transition: fill 0.2s ease;
+  }
+  .like-btn.liked svg path {
+    fill: currentColor
+  }
+</style>
+
+<div class="inline-flex items-center gap-x-1.5 mt-8">
+  <button  
+    id="like-btn"
+    class="like-btn text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 relative"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 sm:size-5">
+  <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z" />
+    </svg>
+    <span id="like-tooltip" class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-zinc-800 dark:bg-zinc-700 text-white text-xs py-1 px-2 rounded opacity-0 transition-opacity duration-300 whitespace-nowrap">
+    已点赞
+    </span>
+    
+  </button>
+        <span id="like-count">0</span>
+
+</div>
+
+<script type="module" client:load define:vars={{ slug }}>
+
+
+
+  // 该脚本会在浏览器端运行（client:load 保证在页面加载后执行）
+  // “slug” 变量通过 define:vars={{ slug }} 注入，已是文章的真实标识
+  const btn = document.querySelector('#like-btn');
+  const countEl = document.querySelector('#like-count');
+  const storageKey = `liked-${slug}`;
+
+  // 1. 先尝试从本地存储读取已有状态，防止重复点赞
+  const hasLiked = localStorage.getItem(storageKey) === 'true';
+  if (hasLiked) {
+    btn.disabled = true;
+    btn.classList.add('liked');
+  }
+
+  // 2. 定义一个函数：去接口拿当前点赞数
+  async function fetchCount() {
+    try {
+      const res = await fetch(`/api/like?slug=${encodeURIComponent(slug)}`);
+      if (!res.ok) throw new Error('Fetch failed');
+      const { count } = await res.json();
+      countEl.textContent = count;
+    } catch (e) {
+      console.error('Error fetching like count', e);
+    }
+  }
+
+  // 3. 定义点击事件：如果没点赞过，发 POST 请求去 +1，并写入 localStorage
+  async function handleLike() {
+    if (btn.disabled) return;
+    try {
+      const res = await fetch(`/api/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug }),
+      });
+      if (!res.ok) throw new Error('Post failed');
+      const { count } = await res.json();
+      countEl.textContent = count;
+      localStorage.setItem(storageKey, 'true');
+      btn.disabled = true;
+      btn.classList.add('liked');
+    } catch (e) {
+      console.error('Error posting like', e);
+    }
+  }
+
+  // 4. 绑定点击事件 & 初次渲染时去拉一次 count
+  btn.addEventListener('click', handleLike);
+  fetchCount();
+</script>

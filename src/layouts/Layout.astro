@@ -9,18 +9,49 @@ export interface Props {
   description?: string;
 }
 
-const { title, description = "A minimalist personal blog" } = Astro.props;
+const { title, description = "ZIK Trinity" } = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- 浅色主题下使用深色图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon_black.svg" media="(prefers-color-scheme: light)">
+    <!-- 深色主题下使用浅色图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon_white.svg" media="(prefers-color-scheme: dark)">
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+
+    <!-- 下面要插入的脚本，一定要放在任何 Tailwind CSS <link> 之前 -->
+    <script>
+      (function() {
+        // 1. 先看 localStorage 里有没有 “theme” 这个 key
+        const stored = localStorage.getItem('theme');
+        if (stored === 'light') {
+          // 如果用户之前选了浅色，就显式移除 dark 类
+          document.documentElement.classList.remove('dark');
+        } else if (stored === 'dark') {
+          // 如果用户之前选了深色，就显式加 dark 类
+          document.documentElement.classList.add('dark');
+        } else {
+          // localStorage 里没有：第一次进来，就用系统偏好
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (prefersDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+      })();
+    </script>
+        <!-- 在这里引用你的 Tailwind 编译后的 CSS -->
+    <link rel="stylesheet" href="/dist/output.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

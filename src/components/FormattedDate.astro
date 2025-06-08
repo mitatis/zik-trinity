@@ -11,7 +11,7 @@ const parsedDate = typeof date === 'string' ? new Date(date) : date;
 
 {parsedDate && (
   <time datetime={parsedDate.toISOString()}>
-    {parsedDate.toLocaleDateString('en-us', {
+    {parsedDate.toLocaleDateString('zh', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

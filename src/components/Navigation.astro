@@ -2,12 +2,17 @@
 import ThemeToggle from './ThemeToggle.astro';
 
 const navItems = [
-  { text: 'Home', href: '/' },
-  { text: 'Essays', href: '/essays' },
-  { text: 'Poetry', href: '/poetry' },
-  { text: 'Tags', href: '/tags' },
-  { text: 'About', href: '/about' },
+  { text: '主页', href: '/' },
+  { text: '文章', href: '/blog' },
+  { text: '主题', href: '/tags' },
+  { text: '诗歌', href: '/poetry' },
+  { text: '简介', href: '/about' },
+  { text: 'Whisky', href: "/building"},
+  { text: 'AI-Lab', href: "/building"},
+  { text: 'RSS', href: 'rss.xml' },
+
 ];
+
 
 // Get current path for active link highlighting
 const pathname = new URL(Astro.request.url).pathname;
@@ -17,7 +22,9 @@ const currentPath = pathname.slice(1); // remove the first "/"
 <header class="py-4 fixed top-0 left-0 right-0 z-40 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800">
   <div class="max-w-3xl mx-auto px-4 flex items-center justify-between">
     <!-- Logo -->
-    <a href="/" class="font-bold text-xl text-zinc-900 dark:text-white">JD</a>
+    <a href="/">
+      <img src="/favicon.svg" class="h-8 w-8 dark:invert" alt="ZIK Logo" />
+    </a>
     
     <!-- Desktop Navigation -->
     <nav class="hidden sm:flex items-center space-x-6">
@@ -49,7 +56,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
 <!-- Mobile Menu Overlay -->
 <div id="mobile-menu" class="fixed inset-0 z-50 bg-white dark:bg-zinc-900 flex flex-col opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
   <div class="flex justify-between items-center p-4 border-b border-zinc-100 dark:border-zinc-800">
-    <a href="/" class="font-bold text-xl text-zinc-900 dark:text-white">JD</a>
+    <a href="/" class="font-bold text-xl text-zinc-900 dark:text-white">ZIK</a>
     <button id="close-menu-button" class="text-zinc-900 dark:text-white p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

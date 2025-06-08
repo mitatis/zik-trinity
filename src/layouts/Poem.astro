@@ -1,0 +1,243 @@
+---
+import Layout from './Layout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import LikeButton from '../components/LikeButton.astro';
+import './styles/markdown.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+}
+
+const { title, description, pubDate, updatedDate,tags = []} = Astro.props;
+
+// Fix for the canonicalURL creation
+let canonicalURL;
+try {
+  canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.com');
+} catch (error) {
+  console.error('Error creating canonical URL:', error);
+  canonicalURL = new URL('https://example.com');
+}
+
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop() || ''; // Ensure slug is a string
+
+
+---
+
+<Layout title={title} description={description}>
+  <article ID="main-content"  class="poem-container prose dark:prose-invert prose-zinc lg:prose-lg mx-auto max-w-4xl">
+    <div class="poem-head mb-12">
+      <h1 class=" mb-4 text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+        {title}
+      </h1>
+      <!-- <div class="flex items-center gap-x-4 text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+       
+        <FormattedDate date={pubDate} />
+        {updatedDate && (
+          <span>更新于 <FormattedDate date={updatedDate} /></span>
+        )}
+         
+      </div> -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-y-2 sm:gap-x-4 text-sm text-zinc-500 dark:text-zinc-400 mb-6 ">
+        {pubDate && (
+                    <time datetime={pubDate.toISOString()} class="flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5 sm:size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0 
+                        A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                      </svg>
+                      <FormattedDate date={pubDate} /> <!-- Remove format prop -->
+                    </time>
+                  )}
+        {updatedDate && (
+          <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" class="size-3.5 sm:size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          <FormattedDate date={updatedDate} /></span>
+        )}
+
+      </div>
+    <div class="poem-body">
+      <slot />
+    </div>
+    </div>
+
+    
+    <!-- Add the like button after the content -->
+    
+    <div class="pt-8 border-t col-span-1 md:col-span-3 border-zinc-200 dark:border-zinc-800">
+      <div class="flex flex-row items-center gap-4">
+        <LikeButton slug={slug}/>
+        <!-- <div class="mt-6 space-x-4"><LikeButton slug={slug}/></div> -->
+        <ShareButtons url={canonicalURL.toString()} title={title} /> <!-- Convert URL to string -->
+      </div>
+    </div>
+    
+  </article>
+  
+  <slot name="after-article" />
+</Layout>
+
+<script>
+  // Enhanced blog post SPA transitions
+  function setupBlogPostTransitions() {
+    // Animate article entrance
+    const article = document.querySelector('article');
+    if (article) {
+      article.classList.add('article-entering');
+      
+      // Remove class after animation completes
+      setTimeout(() => {
+        article.classList.remove('article-entering');
+      }, 1000);
+    }
+    
+    
+    // Handle prev/next navigation links
+    const navLinks = document.querySelectorAll('.blog-nav-link');
+    navLinks.forEach(link => {
+      if (!link.hasAttribute('data-spa-handled')) {
+        link.setAttribute('data-spa-handled', 'true');
+        
+        link.addEventListener('mouseenter', () => {
+          link.classList.add('nav-link-hover');
+        });
+        
+        link.addEventListener('mouseleave', () => {
+          link.classList.remove('nav-link-hover');
+        });
+      }
+    });
+    
+    // Animate headings when they enter the viewport
+    const animateHeadings = () => {
+      const headings = document.querySelectorAll('article h2, article h3');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('heading-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -100px 0px'
+      });
+      
+      headings.forEach(heading => {
+        heading.classList.add('heading-animated');
+        observer.observe(heading);
+      });
+      
+      return observer;
+    };
+    
+    // Initialize heading animations
+    const headingObserver = animateHeadings();
+    
+
+    
+    // Enhance blockquotes with icons
+    function enhanceBlockquotes() {
+      const blockquotes = document.querySelectorAll('.markdown-content blockquote');
+      
+      blockquotes.forEach(blockquote => {
+        if (blockquote.classList.contains('enhanced-quote')) return;
+        
+        blockquote.classList.add('enhanced-quote');
+        
+        // Add quote icon
+        const icon = document.createElement('div');
+        icon.className = 'quote-icon';
+        icon.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+          </svg>
+        `;
+        
+        blockquote.insertBefore(icon, blockquote.firstChild);
+      });
+    }
+    
+    // Run all enhancements
+    enhanceBlockquotes();
+    
+    // Clean up observers when navigating away
+    document.addEventListener('spa-navigation-start', () => {
+      if (headingObserver) {
+        headingObserver.disconnect();
+      }
+    });
+  }
+  
+  // Initialize on first load
+  document.addEventListener('DOMContentLoaded', setupBlogPostTransitions);
+  
+  // Re-initialize when content changes via Astro's view transitions
+  document.addEventListener('astro:page-load', setupBlogPostTransitions);
+  
+  // For compatibility with custom transition system
+  document.addEventListener('page-transition-complete', setupBlogPostTransitions);
+  
+  // Also initialize when SPA navigation completes
+  document.addEventListener('spa-navigation-complete', setupBlogPostTransitions);
+</script>
+
+<style>
+  /* .poem-title{
+    font-family:;
+  }
+  .poem-body{
+    
+  } */
+  
+    /* ——  Poetry‑first minimal layout  —— */
+
+  /* .poem-container {
+    max-width: 96rem;
+    margin: 0 auto;
+    font-family: "Noto Serif SC", serif ;
+    line-height: 1;
+    text-align: center;
+    white-space: pre-wrap;     
+  }
+  .
+
+
+  :global(.poem-body p) {
+    margin: 0 0 0 0 !important;
+  }
+
+  :global(.poem-body > *:first-child) {
+    margin-top: 0 !important; 
+  }
+  :global(.poem-body) {
+        font-size: 1rem;     
+  } */
+
+
+  /* Article entrance animation */
+  .article-entering {
+    animation: article-fade-in 0.8s ease-out forwards;
+  }
+  
+  @keyframes article-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Rest of the styles remain unchanged... */
+</style>
+
+</file>

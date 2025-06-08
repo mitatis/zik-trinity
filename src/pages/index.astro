@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
 // Get all blog posts
-const allPosts = await getCollection('essays');
+const allPosts = await getCollection('blog');
 
 // Get the 3 most recent posts
 const recentPosts = allPosts
@@ -16,7 +16,7 @@ const recentPosts = allPosts
 const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].slice(0, 5);
 ---
 
-<Layout title="Home | Mitatis Blog">
+<Layout title="ZIK Trinity">
   <!-- Hero Section with improved mobile responsiveness -->
   <section class="py-10 sm:py-16 md:py-20 px-4 sm:px-6 theme-transition-all">
     <div class="max-w-2xl mx-auto relative">
@@ -24,26 +24,26 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
       <div class="absolute -top-10 sm:-top-20 -left-10 sm:-left-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-100 dark:bg-zinc-800/50 rounded-full blur-3xl opacity-50 animate-blob theme-transition-bg"></div>
       <div class="absolute -bottom-10 sm:-bottom-20 -right-10 sm:-right-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-200 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-30 animate-blob animation-delay-2000 theme-transition-bg"></div>
       
-      <div class="relative text-center sm:text-left">
+      <div class="relative text-left sm:text-left">
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color hero-text">
-          <span class="block">Writing on design,</span>
-          <span class="block mt-1">development, and</span>
+          <span class="block">见字如晤</span>
+          <span class="block mt-1">这是我的数字空间</span>
           <span class="block mt-1 relative">
             <span class="relative inline-block">
-              digital experiences.
+              ZIK-Trinity
               <span class="absolute -bottom-1 left-0 w-full h-1 bg-zinc-800 dark:bg-zinc-200 transform origin-left theme-transition-bg"></span>
             </span>
           </span>
         </h1>
         <p class="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed theme-transition-color max-w-lg mx-auto sm:mx-0">
-          Welcome to my corner of the internet. I'm a designer and developer sharing thoughts on creating meaningful digital experiences.
+          欢迎来到我的个人博客站<br/>这里有我对科技、哲思和一切事物的主观输出
         </p>
         <div class="mt-6 sm:mt-8 md:mt-10 flex flex-wrap gap-3 sm:gap-4 md:gap-6 justify-center sm:justify-start">
           <a 
             href="/about" 
             class="group relative inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all duration-300 theme-transition-color min-h-[44px]"
           >
-            <span>More about me</span>
+            <span>认识一下</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
@@ -58,13 +58,13 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
   <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
     <div class="max-w-3xl mx-auto">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 md:mb-12">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color text-center sm:text-left">Recent Posts</h2>
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color text-center sm:text-left">最新</h2>
         <a 
           href="/blog" 
           class="group relative text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 self-center sm:self-auto theme-transition-color min-h-[44px] flex items-center justify-center"
         >
           <span class="flex items-center gap-1">
-            View all posts
+            查看全部
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
@@ -92,28 +92,28 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
               </div>
             )}
             
-            <div class="relative z-10 flex items-center flex-wrap gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color justify-center sm:justify-start w-full">
+            <div class="relative z-10 flex items-center flex-wrap gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color justify-start sm:justify-start w-full">
               <time datetime={post.data.pubDate.toISOString()} class="font-medium">
-                <FormattedDate date={post.data.pubDate} format="long" />
+                <FormattedDate date={post.data.pubDate} locale="long" />
               </time>
               <span class="relative z-10 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 sm:px-3 py-1 sm:py-1.5 font-medium text-zinc-600 dark:text-zinc-300 theme-transition-all">
-                {post.data.readingTime || `${Math.ceil(post.body.length / 2000)} min read`}
+                {post.data.readingTime}
               </span>
             </div>
             
             <h3 class="relative z-10 mt-3 text-lg sm:text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors theme-transition-color text-center sm:text-left w-full">
-              <a href={`/blog/${post.slug}`} class="min-h-[44px] flex items-center justify-center sm:justify-start">
+              <a href={`/blog/${post.slug}`} class="min-h-[44px] flex items-center justify-start sm:justify-start">
                 <span class="absolute -inset-x-4 -inset-y-2.5 sm:-inset-x-6 sm:-inset-y-4"></span>
                 {post.data.title}
               </a>
             </h3>
             
-            <p class="relative z-10 mt-2 sm:mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 theme-transition-color text-center sm:text-left w-full">
+            <p class="relative z-10 mt-2 sm:mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 theme-transition-color text-left sm:text-left w-full">
               {post.data.description}
             </p>
             
             {post.data.tags && post.data.tags.length > 0 && (
-              <div class="relative z-10 mt-3 sm:mt-4 flex flex-wrap gap-2 justify-center sm:justify-start w-full">
+              <div class="relative z-10 mt-3 sm:mt-4 flex flex-wrap gap-2 justify-left sm:justify-start w-full">
                 {post.data.tags.slice(0, 3).map(tag => (
                   <a 
                     href={`/tags/${tag}`}
@@ -124,7 +124,7 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
                 ))}
                 {post.data.tags.length > 3 && (
                   <span class="inline-flex items-center rounded-full bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400 theme-transition-all min-h-[28px]">
-                    +{post.data.tags.length - 3} more
+                    +{post.data.tags.length - 3} 更多
                   </span>
                 )}
               </div>
@@ -135,8 +135,8 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
               class="relative z-10 mt-3 sm:mt-4 flex items-center text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors theme-transition-color mx-auto sm:mx-0 min-h-[44px]"
             >
               <span class="relative overflow-hidden inline-block">
-                <span class="group-hover:-translate-y-full block transition-transform duration-300">Read article</span>
-                <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">Explore now</span>
+                <span class="group-hover:-translate-y-full block transition-transform duration-300">阅读文章</span>
+                <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">立即开启</span>
               </span>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="ml-1 h-4 w-4 stroke-current transition-transform duration-300 group-hover:translate-x-1">
                 <path d="M6.75 5.75 9.25 8l-2.5 2.25" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -152,7 +152,7 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
   {allTags.length > 0 && (
     <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
       <div class="max-w-3xl mx-auto">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 theme-transition-color text-center sm:text-left">Explore Topics</h2>
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 theme-transition-color text-center sm:text-left">探索主题</h2>
         
         <!-- Improved grid layout for mobile -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto">
@@ -166,11 +166,12 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
                 <div class="flex items-start justify-between mb-2">
                   <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100 theme-transition-color mr-2">#{tag}</span>
                   <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full flex-shrink-0 theme-transition-all">
-                    {tagCount} {tagCount === 1 ? 'post' : 'posts'}
+                    {tagCount} 篇
+                    {/* {tagCount === 1 ? 'post' : 'posts'} */}
                   </span>
                 </div>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 theme-transition-color">
-                  Explore articles about {tag}
+                  所有关于 {tag} 的文章
                 </p>
               </a>
             )
@@ -182,7 +183,7 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sli
             href="/tags" 
             class="inline-flex items-center text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 theme-transition-color min-h-[44px]"
           >
-            <span>View all topics</span>
+            <span>查看主题</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>

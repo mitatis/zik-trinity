@@ -19,6 +19,7 @@
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "6.0.2",
     "framer-motion": "12.6.3",
+    "html2canvas": "1.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hotkeys-hook": "4.6.1",

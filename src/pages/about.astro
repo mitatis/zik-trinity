@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { FaJs, FaReact, FaNodeJs, FaPython } from 'react-icons/fa';
-import { SiTypescript, SiAstro } from 'react-icons/si';
+import { SiTypescript, SiAstro, SiJamboard, SiDarkreader } from 'react-icons/si';
 
 // Thông tin kỹ năng với logo ngôn ngữ lập trình
 const skills = [
@@ -36,8 +36,51 @@ const skills = [
     icon: SiAstro
   }
 ];
+
+// 工作经历
+const jobs = [
+  {
+    name: "宝洁",
+    sec: "CBD",
+    city: "湖北",
+    nation:"中国",
+    url: "https://www.pg.com.cn/",
+    beginDate: "2025",
+    endDate: "",
+    icon: "/logos/P_G_Logo_RGB.svg",
+    darkIcon: "",
+    role: "",
+    description: ""
+  },
+  {
+    name: "莫斯科国立大学",
+    sec: "商学院",
+    city: "莫斯科",
+    nation: "俄罗斯",
+    url: "https://msu.ru/",
+    beginDate: "2022",
+    endDate: "2025",
+    icon: "/logos/MSU.png",
+    darkIcon: "/logos/MSU_dark.png",
+    role: "创新学",
+    description: ""
+  },
+    {
+    name: "莫斯科国立大学",
+    sec: "物理学院",
+    city: "莫斯科",
+    nation: "俄罗斯",
+    url: "https://msu.ru/",
+    beginDate: "2019",
+    endDate: "2022",
+    icon: "/logos/MSU.png",
+    darkIcon: "/logos/MSU_dark.png",
+    role: "",
+    description: ""
+  }
+];
 ---
-<BaseLayout title="About Me" description="Learn more about my background, skills, and experience">
+<BaseLayout title="介绍" description="我的个人简介">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 theme-transition-all">
     <!-- Hero Section - Improved mobile layout -->
     <div class="relative mb-12 sm:mb-16 md:mb-20">
@@ -48,11 +91,11 @@ const skills = [
       <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div class="order-2 md:order-1 text-center md:text-left">
           <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4 sm:mb-6 theme-transition-color">
-            Hello, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 to-zinc-900 dark:from-zinc-300 dark:to-zinc-100 theme-transition-all">John Doe</span>
+            哈喽 👋<br>我是 <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 to-zinc-900 dark:from-zinc-300 dark:to-zinc-100 theme-transition-all">Mitatis</span>
           </h1>
           
           <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-6 sm:mb-8 leading-relaxed theme-transition-color">
-            A designer and developer with a passion for creating clean, functional, and beautiful digital experiences.
+            一个试图将哲思与前沿技术相结合的 GenZ 创业者
           </p>
           
           <div class="flex flex-wrap gap-4 social-links-container justify-center md:justify-start theme-transition-children">
@@ -63,7 +106,7 @@ const skills = [
         <div class="order-1 md:order-2 relative">
           <div class="aspect-square w-full max-w-[280px] sm:max-w-[320px] md:max-w-md mx-auto overflow-hidden rounded-3xl border-4 sm:border-8 border-white dark:border-zinc-800 shadow-xl sm:shadow-2xl theme-transition-all">
             <img 
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80" 
+              src="https://s3.bmp.ovh/imgs/2025/06/02/8437953ff2cfe944.jpg" 
               alt="Profile photo" 
               class="w-full h-full object-cover"
               loading="eager"
@@ -72,7 +115,7 @@ const skills = [
           
           <!-- Decorative elements - adjusted for mobile -->
           <div class="absolute -bottom-4 sm:-bottom-6 -right-4 sm:-right-6 w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 bg-zinc-100 dark:bg-zinc-800 rounded-full border-2 sm:border-4 border-white dark:border-zinc-900 shadow-lg flex items-center justify-center theme-transition-all">
-            <span class="text-2xl sm:text-3xl">👋</span>
+            <span class="text-2xl sm:text-3xl">😉</span>
           </div>
         </div>
       </div>
@@ -83,29 +126,26 @@ const skills = [
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 flex items-center justify-center md:justify-start theme-transition-color">
           <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 mr-4 theme-transition-bg"></span>
-          About Me
+          关于我
           <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 ml-4 theme-transition-bg"></span>
         </h2>
         
         <div class="prose prose-zinc dark:prose-invert max-w-none theme-transition-all">
           <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
-            I'm a designer and developer with a passion for creating clean, functional, and beautiful digital experiences. 
-            With over 5 years of experience in the industry, I've worked on a variety of projects from small personal 
-            websites to large enterprise applications.
+            <!-- 我不过是无名小卒。但如果你真的想知道，我是一个热爱生活，相信奇迹发生的普通人。曾经无数次穿梭于现实与幻想的世界的行者，希望在逻辑世界寻得生活的意义。我渴望真理，所以始终徘徊在文学、哲学和现实世界。直到现在，在构建和你的注视里，我从你凝视的自我构建中拾得对抗虚无的存在。 -->
           </p>
-          
+          我叫艾子凯，你也可以叫我Adrian。网络昵称是Mitatis。我一边热爱生活一边讨厌生活，在存在主义的虚无里，我始终相信构建的力量，于是ZIK-Trinity应运而生。
           <!-- Other paragraphs remain the same -->
         </div>
       </div>
     </div>
     
     <!-- Skills Section - Improved for mobile -->
-    <div class="mb-16 sm:mb-20 md:mb-24 theme-transition-all">
-      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12 text-center theme-transition-color">Tech Stack</h2>
-      
-      <div class="tech-stack-slider relative overflow-hidden py-4 sm:py-8">
-        <!-- Main slider container -->
-        <div class="slider-track flex animate-slide">
+    <div class="mb-8 sm:mb-10 md:mb-12 theme-transition-all">
+      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12 text-center theme-transition-color">经历</h2>  
+      <!-- <div class="tech-stack-slider relative overflow-hidden py-4 sm:py-8"> -->
+    </div>
+        <!-- <div class="slider-track flex animate-slide">
           {[...skills, ...skills, ...skills].map((skill, index) => (
             <div key={`${skill.name}-${index}`} class="skill-card min-w-[220px] sm:min-w-[280px] mx-2 sm:mx-4 bg-white dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2 hover:scale-105 theme-transition-element">
               <div class="p-4 sm:p-6">
@@ -133,30 +173,90 @@ const skills = [
               </div>
             </div>
           ))}
-        </div>
+        </div> -->
         
         <!-- Gradient overlays for smooth fade effect -->
-        <div class="absolute top-0 bottom-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-white dark:from-zinc-900 to-transparent z-10 theme-transition-bg"></div>
+        <!-- <div class="absolute top-0 bottom-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-white dark:from-zinc-900 to-transparent z-10 theme-transition-bg"></div>
         <div class="absolute top-0 bottom-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-white dark:from-zinc-900 to-transparent z-10 theme-transition-bg"></div>
       </div>
-    </div>
+    </div> -->
     
+    <!-- Experience Timeline -->
+    {jobs.map(job => (
+        <div class="relative flex items-center gap-6 py-6 md:py-8 w-full">
+          <!-- Vertical timeline line -->
+          <span class="absolute left-0 top-0 bottom-0 w-px bg-zinc-300 dark:bg-zinc-700"></span>
+
+          <!-- Time -->
+          <div class="w-10 font-mono text-zinc-500 dark:text-zinc-400 pl-3 text-center  text-xs sm:text-sm">
+            {job.endDate && (<div>{job.endDate}
+            |</div>
+            )}
+            {job.beginDate}
+          </div>
+
+          <!-- Company logo (clickable) -->
+          <a
+            href={job.url}
+            class="items-center justify-end w-12 theme-transition-color"
+          >
+            <user__selection>
+              <img
+                src={job.icon}
+                alt={job.name}
+                class="object-contain w-full h-full block dark:hidden"
+              />
+              <img
+                src={job.darkIcon ? job.darkIcon : job.icon}
+                alt={job.name}
+                class="object-contain w-full h-full hidden dark:block"
+              />
+            </user__selection>
+          </a>
+
+          <!-- place -->
+          <div class="w-60 text-left font-mono text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-left theme-transition-color">{job.name}</div>
+            <div>{job.sec}</div>
+            <div>{job.role}</div>
+          </div>
+
+          <!-- Two-column description -->
+          {/* <div class="w-10 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
+            {job.description.map((line, idx) => (
+              <p key={idx}>{line}</p>
+            ))}
+          </div> */}
+
+          <!-- description -->
+          <div class="flex justify-start text-left font-mono text-xs sm:text-sm text-zinc-800 dark:text-zinc-200">
+            {job.description}
+          </div>
+
+          <!-- location -->
+          <div class="font-bold w-40 text-right font-mono text-xs sm:text-sm text-zinc-900 dark:text-zinc-100">
+            <div>{job.city}</div>
+            {/* <div>{job.nation}</div> */}
+          </div>
+        </div>
+      ))}
+
     <!-- Contact Section - Improved for mobile -->
-    <div class="max-w-3xl mx-auto text-center theme-transition-all">
-      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-4 sm:mb-6 theme-transition-color">Get in Touch</h2>
+    <div class="max-w-3xl mx-auto text-center theme-transition-all mt-16">
+
+      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-4 sm:mb-6 theme-transition-color">联系我</h2>
       <p class="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 mb-6 sm:mb-8 theme-transition-color">
-        I'm always open to new opportunities and collaborations. If you'd like to work together or just say hello, 
-        feel free to reach out.
+        欢迎给我写信！并在任何地方与我取得联系，我的微信号是：mitatis
       </p>
       
       <a 
-        href="mailto:hello@example.com" 
+        href="https://letterbird.co/mitatis" 
         class="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors text-base sm:text-lg font-medium theme-transition-all"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
-        Say Hello
+        打个招呼
       </a>
     </div>
   </div>

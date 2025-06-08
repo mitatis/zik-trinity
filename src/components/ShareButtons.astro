@@ -1,4 +1,6 @@
 ---
+import html2canvas from 'html2canvas';
+
 export interface Props {
   title: string;
   url: string;
@@ -11,9 +13,9 @@ const encodedUrl = encodeURIComponent(url);
 ---
 
 <div class={`flex items-center gap-4 mt-8 ${className}`}>
-  <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Share:</span>
+  <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">分享</span>
   <div class="flex gap-2">
-    <a 
+    <!-- <a 
       href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -39,20 +41,31 @@ const encodedUrl = encodeURIComponent(url);
       aria-label="Share on LinkedIn"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-    </a>
+    </a> -->
+
+    <!-- <button
+      id="capture-button"
+      class="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 relative"
+      aria-label="Copy link"
+      title="截图"
+    >
+      生成诗歌图片
+    </button> -->
     <button 
       id="copy-link-button" 
       class="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 relative"
       aria-label="Copy link"
-      title="Copy link to clipboard"
+      title="复制链接"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
       <span id="copy-tooltip" class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-zinc-800 dark:bg-zinc-700 text-white text-xs py-1 px-2 rounded opacity-0 transition-opacity duration-300 whitespace-nowrap">
-        Copied!
+        已复制
       </span>
     </button>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
   // Function to handle copy link button
@@ -121,4 +134,56 @@ const encodedUrl = encodeURIComponent(url);
     // Notify other components that share action is complete
     notifyShareComplete();
   }
+
+  // 等页面 DOM 加载完之后再绑定
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('capture-button');
+    const mainContent = document.getElementById('main-content');
+    const previewContainer = document.getElementById('preview-container');
+    if (!btn) return;
+
+    btn.addEventListener('click', async () => {
+      // 1. 选中要截屏的节点
+      const target = document.getElementById('main-content');
+      if (!target) {
+        console.error('找不到 #main-content 元素');
+        return;
+      }
+
+      // 获取容器在视口里的物理尺寸（CSS 像素），
+      // clientWidth/Height 只包含内容区，不含滚动条和边框
+      const contentWidth = mainContent.clientWidth;
+      const contentHeight = mainContent.clientHeight;
+
+      // 下半部分的起始 Y 坐标：
+      const cutHeight = contentHeight - 430;
+
+      try {
+        // 2. 用 html2canvas 把节点渲染到 canvas
+        await document.fonts.ready;
+        const canvas = await html2canvas(target, {
+          scale: 2,                 // 提高清晰度，像素 *2
+          useCORS: true,             // 如果图像含有跨域图片，需要开启
+
+          x: 0,                    // 从容器最左边开始
+          y: 0,           // 从“中间”往下开始截
+          width: contentWidth,     // 宽度截到容器的整宽
+          height: cutHeight, // 高度只截取容器下半段
+        });
+
+        // 3. 把 canvas 转成 DataURL（PNG）
+        const dataURL = canvas.toDataURL('image/png');
+
+        // 4. 创建一个 <a>，触发下载（也可以直接打开新窗口查看或上传分享）
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'poem.png';  // 文件名可自定义
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        console.error('生成图片出错：', err);
+      }
+    });
+  });
 </script>

@@ -35,17 +35,17 @@ const sortedTags = [...tagObjects].sort((a, b) => b.count - a.count);
         <span class="inline-block relative">
           <span class="relative inline-block">
             <span class="absolute -inset-1 rounded-lg bg-gradient-to-r from-zinc-200/50 to-zinc-300/50 dark:from-zinc-800/50 dark:to-zinc-700/50 blur-sm theme-transition-bg"></span>
-            <span class="relative">Explore</span>
+            <span class="relative">发现</span>
           </span>
           {" "}
           <span class="relative inline-block">
-            Topics
+            主题
             <span class="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-0.5 sm:h-1 bg-gradient-to-r from-zinc-400 to-zinc-600 dark:from-zinc-600 dark:to-zinc-400 transform origin-left animate-underline theme-transition-bg"></span>
           </span>
         </span>
       </h1>
       <p class="relative text-sm sm:text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto theme-transition-color">
-        Discover content organized by your interests
+        寻找感兴趣的标签
       </p>
     </div>
     
@@ -57,8 +57,8 @@ const sortedTags = [...tagObjects].sort((a, b) => b.count - a.count);
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
           </svg>
         </div>
-        <p class="text-lg sm:text-xl md:text-2xl font-medium text-zinc-800 dark:text-zinc-200 theme-transition-color">No tags found yet.</p>
-        <p class="mt-2 text-xs sm:text-sm md:text-base text-zinc-500 dark:text-zinc-500 theme-transition-color">Check back later for categorized content.</p>
+        <p class="text-lg sm:text-xl md:text-2xl font-medium text-zinc-800 dark:text-zinc-200 theme-transition-color">暂无标签</p>
+        <p class="mt-2 text-xs sm:text-sm md:text-base text-zinc-500 dark:text-zinc-500 theme-transition-color">请稍后查看</p>
       </div>
     ) : (
       <div class="flex justify-center w-full">
@@ -68,7 +68,7 @@ const sortedTags = [...tagObjects].sort((a, b) => b.count - a.count);
           <div class="absolute -top-8 -right-8 w-20 sm:w-24 md:w-32 lg:w-40 h-20 sm:h-24 md:h-32 lg:h-40 bg-gradient-to-br from-zinc-200/30 to-zinc-300/20 dark:from-zinc-700/20 dark:to-zinc-800/10 rounded-full blur-xl theme-transition-bg"></div>
           <div class="absolute -bottom-8 -left-8 w-20 sm:w-24 md:w-32 lg:w-40 h-20 sm:h-24 md:h-32 lg:h-40 bg-gradient-to-tl from-zinc-200/30 to-zinc-300/20 dark:from-zinc-700/20 dark:to-zinc-800/10 rounded-full blur-xl theme-transition-bg"></div>
           
-          <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4 md:mb-6 lg:mb-8 text-center theme-transition-color">Popular Topics</h2>
+          <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4 md:mb-6 lg:mb-8 text-center theme-transition-color">热门主题</h2>
           
           <!-- Ultra-responsive grid layout with fallbacks -->
           <div class="grid grid-cols-2 xxxs:grid-cols-2 xxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5 xxxs:gap-2 xxs:gap-2 xs:gap-2 sm:gap-3 md:gap-4 w-full">
@@ -89,7 +89,7 @@ const sortedTags = [...tagObjects].sort((a, b) => b.count - a.count);
                     <h3 class="text-[10px] xxxs:text-xs xxs:text-xs xs:text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors theme-transition-color break-words hyphens-auto truncate">
                       {tag.name}
                     </h3>
-                    <p class="text-[8px] xxxs:text-[9px] xxs:text-[9px] xs:text-[10px] sm:text-xs md:text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color truncate">{tag.count} article{tag.count !== 1 ? 's' : ''}</p>
+                    <p class="text-[8px] xxxs:text-[9px] xxs:text-[9px] xs:text-[10px] sm:text-xs md:text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color truncate">{tag.count} 篇文章{tag.count/tag.count !== 1 ? 's' : ''}</p>
                   </div>
                 </div>
               </a>

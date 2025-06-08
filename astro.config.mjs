@@ -23,6 +23,11 @@ export default defineConfig({
     tailwind(),
     react(),
   ],
+  output: 'server', 
+  i18n:{
+    defaultLocale:"zh",
+    locales:['zh','en']
+  },
   vite: {
     // Đảm bảo biến môi trường được chuyển đến client
     define: {
