@@ -418,6 +418,7 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
   // For compatibility with custom transition system
   document.addEventListener('page-transition-complete', setupSPATransitions);
 </script>
+<script>
   // --- Fetch like counts from KV via the /api/like endpoint ---
   function fetchLikeCounts() {
     document.querySelectorAll('.like-count[data-slug]').forEach(el => {
@@ -434,3 +435,4 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
   }
   document.addEventListener('DOMContentLoaded', fetchLikeCounts);
   document.addEventListener('astro:page-load', fetchLikeCounts);
+</script>
