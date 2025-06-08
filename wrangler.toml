@@ -1,9 +1,5 @@
-name = "zik-trinity-lab"
-compatibility_date = "2025-06-09" 
+name = "main"
+compatibility_date = "2025-06-09"
 
-[build]
-command = "pnpm run build"
-
-[build.upload]
-format = "service-worker"
-dir    = "dist"
+[assets]
+directory = "./dist"
