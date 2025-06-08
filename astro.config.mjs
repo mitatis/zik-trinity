@@ -29,21 +29,18 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: import.meta.env.PROD
-        ? { 'react-dom/server': 'react-dom/server.edge' }
+        ? {
+            // ① 默认入口
+            'react-dom/server': 'react-dom/server.edge',
+            // ② 浏览器 fallback —— 也指向 edge 版本
+            'react-dom/server.browser': 'react-dom/server.edge',
+          }
         : {},
-    }
+    },
   },
   output: 'server', 
   i18n:{
     defaultLocale:"zh",
     locales:['zh','en']
-  },
-  vite: {
-    // Đảm bảo biến môi trường được chuyển đến client
-    define: {
-      'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID),
-      'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET),
-      'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN),
-    },
   },
 });
