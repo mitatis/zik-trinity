@@ -19,7 +19,7 @@ const getSiteURL = () => {
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({ mode: 'advanced' }),
+  adapter: cloudflare(),
 
   site: getSiteURL(),
   integrations: [
