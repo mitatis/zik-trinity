@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react'; // Add this line
+import cloudflare from '@astrojs/cloudflare';
 
 // Determine site URL based on environment
 const getSiteURL = () => {
@@ -18,6 +19,8 @@ const getSiteURL = () => {
 
 // https://astro.build/config
 export default defineConfig({
+  adapter: cloudflare(),
+
   site: getSiteURL(),
   integrations: [
     tailwind(),
