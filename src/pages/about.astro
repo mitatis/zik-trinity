@@ -3,6 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { FaJs, FaReact, FaNodeJs, FaPython } from 'react-icons/fa';
 import { SiTypescript, SiAstro, SiJamboard, SiDarkreader } from 'react-icons/si';
 
+
+const navLinks = [
+  { text: 'Whisky', href: "https://lab.example.com"},
+  { text: 'AI-Lab', href: "https://lab.example.com"},
+];
 // Thông tin kỹ năng với logo ngôn ngữ lập trình
 const skills = [
   { 
@@ -80,7 +85,7 @@ const jobs = [
   }
 ];
 ---
-<BaseLayout title="介绍" description="我的个人简介">
+<BaseLayout title="简介" description="我的个人简介">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 theme-transition-all">
     <!-- Hero Section - Improved mobile layout -->
     <div class="relative mb-12 sm:mb-16 md:mb-20">
@@ -95,7 +100,7 @@ const jobs = [
           </h1>
           
           <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-6 sm:mb-8 leading-relaxed theme-transition-color">
-            一个试图将哲思与前沿技术相结合的 GenZ 创业者
+            你也可以叫我 Adrian<br>我来自湖北武汉，曾在莫斯科生活过7年——正在寻找新的旅程
           </p>
           
           <div class="flex flex-wrap gap-4 social-links-container justify-center md:justify-start theme-transition-children">
@@ -126,23 +131,63 @@ const jobs = [
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 flex items-center justify-center md:justify-start theme-transition-color">
           <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 mr-4 theme-transition-bg"></span>
-          关于我
+          关于
           <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 ml-4 theme-transition-bg"></span>
         </h2>
         
         <div class="prose prose-zinc dark:prose-invert max-w-none theme-transition-all">
           <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
-            <!-- 我不过是无名小卒。但如果你真的想知道，我是一个热爱生活，相信奇迹发生的普通人。曾经无数次穿梭于现实与幻想的世界的行者，希望在逻辑世界寻得生活的意义。我渴望真理，所以始终徘徊在文学、哲学和现实世界。直到现在，在构建和你的注视里，我从你凝视的自我构建中拾得对抗虚无的存在。 -->
+         我会在这里写一些主观性的，基于个人真实经历而创作的文字/声音。如果你感兴趣的话，欢迎访问我的其他网站：
           </p>
-          我叫艾子凯，你也可以叫我Adrian。网络昵称是Mitatis。我一边热爱生活一边讨厌生活，在存在主义的虚无里，我始终相信构建的力量，于是ZIK-Trinity应运而生。
+          <!-- Other paragraphs remain the same -->
+           <div class="col-span-1 md:col-span-6">
+          <ul class="mt-4 space-y-3">
+            {navLinks.map(link => (
+              <li>
+                <a 
+                  href={link.href} 
+                  class="group flex items-center text-base text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                >
+                  <span class="relative overflow-hidden inline-block">
+                    <span class="relative z-10">{link.text}</span>
+                    <span class="absolute left-0 bottom-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full"></span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-16 sm:mb-20 md:mb-24 theme-transition-all">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 flex items-center justify-center md:justify-end theme-transition-color">
+          <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 mr-4 theme-transition-bg"></span>
+          写作
+          <span class="hidden sm:inline-block w-8 sm:w-12 h-1 bg-zinc-300 dark:bg-zinc-700 ml-4 theme-transition-bg"></span>
+        </h2>
+        
+        <div class="prose prose-zinc dark:prose-invert max-w-none theme-transition-all">
+          <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
+          我受存在主义影响，在文学上钟爱陀翁与现代主义。因此这类作品、和其他主张理性与唯心的相关著作，对我的生活与写作影响颇深。
+          </p>
+          <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
+          和大多数人不同，我对诗歌的认知主要来自电影《死亡诗社》。在和片中相仿的学生时代，我通过电影里对诗歌的再解读重新认识了这一载体，并断断续续开始尝试以模仿为主的自我创作。
+          </p>
+          <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
+          之后，我真正的诗歌创作同样始于第七艺术：从第一次因为写作接触到散文集《雕刻时光》，再到《潜行者》、《索拉里斯星》深深打动了我。导演 安德烈·塔可夫斯基 用视听语言塑造了我对诗意表达的认知。
+          </p>
           <!-- Other paragraphs remain the same -->
         </div>
       </div>
     </div>
+
     
     <!-- Skills Section - Improved for mobile -->
     <div class="mb-8 sm:mb-10 md:mb-12 theme-transition-all">
-      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12 text-center theme-transition-color">经历</h2>  
+      <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12 text-center theme-transition-color">在路上</h2>  
       <!-- <div class="tech-stack-slider relative overflow-hidden py-4 sm:py-8"> -->
     </div>
         <!-- <div class="slider-track flex animate-slide">

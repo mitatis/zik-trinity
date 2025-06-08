@@ -249,20 +249,8 @@ const { title, description = "ZIK Trinity" } = Astro.props;
           }
         });
         
-        // Check RSS feed availability
-        const checkAndGenerateRSS = async () => {
-          try {
-            const response = await fetch('/rss.xml');
-            if (!response.ok) {
-              console.warn('RSS feed not found. Please generate it using an RSS plugin for Astro.');
-            }
-          } catch (error) {
-            console.warn('Could not check RSS feed status.');
-          }
-        };
         
-        // Check RSS feed availability
-        checkAndGenerateRSS();
+
       });
       
       // Theme handling with transition effects
