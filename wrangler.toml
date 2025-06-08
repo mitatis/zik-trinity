@@ -1,17 +1,18 @@
 name = "main"
 workers_dev = true
+compatibility_date = "2025-06-08"
+compatibility_flags = ["nodejs_compat"]
 
 # 运行时的入口脚本
-main        = "disk/_worker.js"
+main    = "dist/_worker.js"
 
-# 把 disk/ 当成站点资源目录，但排除掉 _worker.js
+# 把 dist/ 当成站点资源目录，但排除掉 _worker.js
 [site]
-bucket  = "./disk"
+bucket  = "./dist"
 include = ["**/*"]
 exclude = ["_worker.js"]
 
-compatibility_date = "2025-06-08"
-compatibility_flags = ["nodejs_compat"]
+
 
 [[kv_namespaces]]
 binding = "LIKES"
