@@ -1,5 +1,4 @@
 name = "main"
+main = "dist/_worker.js"
+site = { bucket = "./dist" }   # 静态文件独立桶路径
 compatibility_date = "2025-06-09"
-
-[assets]
-directory = "./dist"
