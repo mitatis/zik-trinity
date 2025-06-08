@@ -1,11 +1,9 @@
 name = "zik-trinity-lab"
-compatibility_date = "2025-06-09"
-type = "esm"   
-
-account_id = "${CF_ACCOUNT_ID}"      # 从 CI 环境变量注入
-# zone_id = "${CF_ZONE_ID}"         # 如果需要绑定到特定路由，可解开此行
+compatibility_date = "2025-06-09" 
 
 [build]
-command = "pnpm run build"           # 构建命令，会生成 dist 目录
-upload.format = "service-worker"     # Workers 适配器默认
-upload.dir = "dist"
+command = "pnpm run build"
+
+[build.upload]
+format = "service-worker"
+dir    = "dist"
