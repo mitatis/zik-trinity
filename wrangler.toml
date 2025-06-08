@@ -5,11 +5,11 @@ workers_dev = true
 main        = "disk/_worker.js"
 
 # 把 disk/ 当成站点资源目录，但排除掉 _worker.js
-site = { 
-  bucket  = "./disk", 
-  include = ["**/*"], 
-  exclude = ["_worker.js"]    # ← 这行会让 Wrangler 上传时跳过它
-}
+[site]
+bucket  = "./disk"
+include = ["**/*"]
+exclude = ["_worker.js"]
+
 compatibility_date = "2025-06-08"
 compatibility_flags = ["nodejs_compat"]
 
