@@ -1,8 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
-const filePath = path.resolve('data', 'likes.json');
-
 // 将可能的 URI 编码 slug 解码为中文
 function safeDecode(str: string) {
   try {
@@ -12,37 +7,35 @@ function safeDecode(str: string) {
   }
 }
 
-function readLikes() {
-  if (!fs.existsSync(filePath)) return {};
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-function writeLikes(data: Record<string, number>) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-}
+import type { APIContext } from 'astro';
 
-export async function GET({ request }: { request: Request }) {
+export async function GET({ request, locals }: APIContext) {
   const url = new URL(request.url);
   const rawSlug = url.searchParams.get('slug');
   if (!rawSlug) return new Response('Missing slug', { status: 400 });
 
   const slug = safeDecode(rawSlug);
-  const count = readLikes()[slug] ?? 0;
+  const kv = locals.runtime.env.LIKES as KVNamespace;
+  const stored = await kv.get(slug);
+  const count = stored ? Number(stored) : 0;
+
   return new Response(JSON.stringify({ count }), {
     headers: { 'Content-Type': 'application/json' },
   });
 }
 
-export async function POST({ request }: { request: Request }) {
+export async function POST({ request, locals }: APIContext) {
   const { slug: rawSlug } = await request.json();
   if (!rawSlug) return new Response('Missing slug', { status: 400 });
 
   const slug = safeDecode(rawSlug);
+  const kv = locals.runtime.env.LIKES as KVNamespace;
+  const stored = await kv.get(slug);
+  const current = stored ? Number(stored) : 0;
+  const newCount = current + 1;
+  await kv.put(slug, newCount.toString());
 
-  const data = readLikes();
-  data[slug] = (data[slug] ?? 0) + 1;
-  writeLikes(data);
-
-  return new Response(JSON.stringify({ count: data[slug] }), {
+  return new Response(JSON.stringify({ count: newCount }), {
     headers: { 'Content-Type': 'application/json' },
   });
 }

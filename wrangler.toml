@@ -2,3 +2,8 @@ name = "main"
 main = "dist/_worker.js"
 site = { bucket = "./dist" }   # 静态文件独立桶路径
 compatibility_date = "2025-06-09"
+compatibility_flags = ["nodejs_compat"]
+
+[[kv_namespaces]]
+binding = "LIKES"
+id      = "d0ecfe6f05a243ee9833040dbf4f0fc7"

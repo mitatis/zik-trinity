@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import likesData from '/data/likes.json';
 
 const allPosts = await getCollection('poetry') || [];
 const sortedPosts = allPosts.sort(
@@ -170,11 +169,15 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
                           })}
                         </time>
                       )}
-                      <span class="flex items-center gap-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 sm:w-4" color="#f22955">
-                        <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z" />
-                      </svg>
-                      {likesData[post.slug] || 0}</span>
+                      <span
+                        class="flex items-center gap-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 like-count"
+                        data-slug={post.slug}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 sm:w-4" color="#f22955">
+                          <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z" />
+                        </svg>
+                        <span class="like-num">0</span>
+                      </span>
                     </div>
                     {/* 显示文章点赞数 */}
                     
@@ -377,13 +380,22 @@ const allTags = [...new Set(sortedPosts.flatMap(post => post.data.tags || []))];
       });
     }
 
-    // 在文章列表中显示实际点赞数
-    document.querySelectorAll('.like-count').forEach(span => {
-      const slug = span.getAttribute('data-slug');
-      const raw = localStorage.getItem(`like-count-${slug}`);
-      const count = raw ? parseInt(raw, 10) : 0;   // default to 0 when no stored value
-      span.innerText = count;
+  // --- Fetch like counts from KV via the /api/like endpoint ---
+  function fetchLikeCounts() {
+    document.querySelectorAll('.like-count[data-slug]').forEach(el => {
+      const slug = el.getAttribute('data-slug');
+      if (!slug) return;
+      const numSpan = el.querySelector('.like-num');
+      fetch(`/api/like?slug=${encodeURIComponent(slug)}`)
+        .then(r => r.json())
+        .then(({ count }) => {
+          if (typeof count === 'number' && numSpan) numSpan.textContent = count;
+        })
+        .catch(() => { /* ignore errors */ });
     });
+  }
+  document.addEventListener('DOMContentLoaded', fetchLikeCounts);
+  document.addEventListener('astro:page-load', fetchLikeCounts);
   });
   
   // SPA transition handling
