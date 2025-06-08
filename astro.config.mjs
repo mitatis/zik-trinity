@@ -19,7 +19,7 @@ const getSiteURL = () => {
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({ mode: 'advanced' }),  
+  adapter: cloudflare({ mode: 'advanced' }),
 
   site: getSiteURL(),
   integrations: [
@@ -31,7 +31,8 @@ export default defineConfig({
       alias: import.meta.env.PROD
         ? { 'react-dom/server': 'react-dom/server.edge' }
         : {},
-    },
+    }
+  },
   output: 'server', 
   i18n:{
     defaultLocale:"zh",
