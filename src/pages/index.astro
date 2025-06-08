@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
 // Get all blog posts
-const allPosts = await getCollection('blog');
+const allPosts = await getCollection('essays');
 
 // Get the 3 most recent posts
 const recentPosts = allPosts
@@ -16,7 +16,7 @@ const recentPosts = allPosts
 const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].slice(0, 5);
 ---
 
-<Layout title="Home | Minimal Blog">
+<Layout title="Home | Mitatis Blog">
   <!-- Hero Section with improved mobile responsiveness -->
   <section class="py-10 sm:py-16 md:py-20 px-4 sm:px-6 theme-transition-all">
     <div class="max-w-2xl mx-auto relative">
