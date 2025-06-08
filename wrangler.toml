@@ -1,6 +1,15 @@
 name = "main"
-main = "dist/_worker.js"
-site = { bucket = "./dist" }   # 静态文件独立桶路径
+workers_dev = true
+
+# 运行时的入口脚本
+main        = "disk/_worker.js"
+
+# 把 disk/ 当成站点资源目录，但排除掉 _worker.js
+site = { 
+  bucket  = "./disk", 
+  include = ["**/*"], 
+  exclude = ["_worker.js"]    # ← 这行会让 Wrangler 上传时跳过它
+}
 compatibility_date = "2025-06-08"
 compatibility_flags = ["nodejs_compat"]
 
