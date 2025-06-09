@@ -3,7 +3,3 @@ compatibility_date = "2025-06-09"
 
 [assets]
 directory = "./dist"
-
-[site]
-bucket = "./dist"
-entry-point = "workers-site"
