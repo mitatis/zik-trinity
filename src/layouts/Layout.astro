@@ -13,7 +13,7 @@ const { title, description = "ZIK Trinity" } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
   <head>
 
     <meta charset="UTF-8" />
@@ -25,6 +25,8 @@ const { title, description = "ZIK Trinity" } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+        {Astro.head}
 
 
     <!-- 下面要插入的脚本，一定要放在任何 Tailwind CSS <link> 之前 -->
@@ -49,8 +51,6 @@ const { title, description = "ZIK Trinity" } = Astro.props;
         }
       })();
     </script>
-        <!-- 在这里引用你的 Tailwind 编译后的 CSS -->
-    <link rel="stylesheet" href="/dist/output.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -18,6 +18,13 @@ const getSiteURL = () => {
 
 // https://astro.build/config
 export default defineConfig({
+  base: '/',
+  integrations: [
+    tailwind({
+      // 如需自定义 Tailwind 路径，可在此传入选项
+      config: { /* 默认使用上面 tailwind.config.cjs */ },
+    })
+  ],
   site: getSiteURL(),
   integrations: [
     tailwind(),
