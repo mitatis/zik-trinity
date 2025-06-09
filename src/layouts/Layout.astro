@@ -50,9 +50,6 @@ const { title, description = "ZIK Trinity" } = Astro.props;
     <meta name="description" content={description} />
     <title>{title}</title>
 
-        {Astro.head}
-
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -222,7 +219,7 @@ const { title, description = "ZIK Trinity" } = Astro.props;
                 return;
               }
               
-              e.preventDefault();
+              // e.preventDefault();
               const targetHref = link.href;
               
               // Don't transition if clicking the current page
@@ -335,4 +332,6 @@ const { title, description = "ZIK Trinity" } = Astro.props;
   body.theme-transitioning * {
     transition-duration: 0.3s !important;
   }
+
 </style>
+

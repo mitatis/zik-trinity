@@ -42,4 +42,5 @@ export default defineConfig({
       'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN),
     },
   },
+  
 });

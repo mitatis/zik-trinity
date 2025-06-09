@@ -30,7 +30,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
         const isActive = currentPath === (item.href === '/' ? '' : item.href.slice(1));
         return (
           <a 
-            href={item.href} 
+            href={item.href }
             class={`text-sm font-medium ${isActive 
               ? 'text-zinc-900 dark:text-white' 
               : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
