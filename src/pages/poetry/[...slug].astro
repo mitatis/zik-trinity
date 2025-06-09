@@ -225,23 +225,6 @@ const finalReadingTime = entry.data.readingTime || readingTimeValue;
   document.addEventListener('page-transition-complete', initializeBlogPost);
 </script>
 
-<script>
-  // Like button functionality
-  document.addEventListener('DOMContentLoaded', () => {
-    const likeButton = document.getElementById('like-button');
-    const likeCountSpan = document.getElementById('like-count');
-    const container = document.getElementById('like-button-container');
-    const slug = container.dataset.slug;
-    const postKey = `like-count-${slug}`;
-    let count = parseInt(localStorage.getItem(postKey)) || 0;
-    likeCountSpan.innerText = count;
-    likeButton.addEventListener('click', () => {
-      count++;
-      localStorage.setItem(postKey, count);
-      likeCountSpan.innerText = count;
-    });
-  });
-</script>
 
 
 <style>

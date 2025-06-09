@@ -3,17 +3,5 @@ workers_dev = true
 compatibility_date = "2025-06-08"
 compatibility_flags = ["nodejs_compat"]
 
-# 运行时的入口脚本
-main    = "dist/_worker.js"
-
-# 把 dist/ 当成站点资源目录，但排除掉 _worker.js
-[site]
-bucket  = "./dist"
-include = ["**/*"]
-exclude = ["_worker.js"]
-
-
-
-[[kv_namespaces]]
-binding = "LIKES"
-id      = "d0ecfe6f05a243ee9833040dbf4f0fc7"
+[assets]
+directory = "./dist"
