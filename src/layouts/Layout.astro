@@ -3,6 +3,7 @@ import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import Background from '../components/Background.astro';
 import '../styles/global.css';
+import './styles/markdown.css';
 
 export interface Props {
   title: string;
@@ -18,16 +19,6 @@ const { title, description = "ZIK Trinity" } = Astro.props;
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- 浅色主题下使用深色图标 -->
-    <link rel="icon" type="image/svg+xml" href="/favicon_black.svg" media="(prefers-color-scheme: light)">
-    <!-- 深色主题下使用浅色图标 -->
-    <link rel="icon" type="image/svg+xml" href="/favicon_white.svg" media="(prefers-color-scheme: dark)">
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    <title>{title}</title>
-
-        {Astro.head}
-
 
     <!-- 下面要插入的脚本，一定要放在任何 Tailwind CSS <link> 之前 -->
     <script>
@@ -51,6 +42,17 @@ const { title, description = "ZIK Trinity" } = Astro.props;
         }
       })();
     </script>
+    <!-- 浅色主题下使用深色图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon_black.svg" media="(prefers-color-scheme: light)">
+    <!-- 深色主题下使用浅色图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon_white.svg" media="(prefers-color-scheme: dark)">
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+        {Astro.head}
+
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
