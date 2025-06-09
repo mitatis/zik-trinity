@@ -147,6 +147,7 @@ const jobs = [
                 <a 
                   href={link.href} 
                   class="group flex items-center text-base text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   <span class="relative overflow-hidden inline-block">
                     <span class="relative z-10">{link.text}</span>
@@ -177,7 +178,15 @@ const jobs = [
           和大多数人不同，我对诗歌的认知主要来自电影《死亡诗社》。在和片中相仿的学生时代，我通过电影里对诗歌的再解读重新认识了这一载体，并断断续续开始尝试以模仿为主的自我创作。
           </p>
           <p class="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 theme-transition-color">
-          我真正的诗歌创作同样始于第七艺术：从《雕刻时光》，再到《潜行者》、《索拉里斯星》。导演 安德烈·塔可夫斯基 用视听语言塑造了我对诗意表达的认知。
+          我真正的诗歌创作同样始于第七艺术：从《雕刻时光》，再到《潜行者》、《索拉里斯星》。导演
+                <a 
+                  href={"https://www.imdb.com/name/nm0001789/?ref_=nv_sr_srsg_0_tt_4_nm_4_in_0_q_tarko"} 
+                  target="_blank" rel="noopener noreferrer"
+                  class="group items-center text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                >
+                  <span>安德烈·塔可夫斯基</span>
+                </a>  
+                用视听语言塑造了我对诗意表达的认知。
           </p>
           <!-- Other paragraphs remain the same -->
         </div>
@@ -243,9 +252,9 @@ const jobs = [
           <!-- Company logo (clickable) -->
           <a
             href={job.url}
+            target="_blank" rel="noopener noreferrer"
             class="items-center justify-end w-12 theme-transition-color"
           >
-            <user__selection>
               <img
                 src={job.icon}
                 alt={job.name}
@@ -256,7 +265,6 @@ const jobs = [
                 alt={job.name}
                 class="object-contain w-full h-full hidden dark:block"
               />
-            </user__selection>
           </a>
 
           <!-- place -->
