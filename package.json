@@ -8,8 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "deploy": "wrangler deploy"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/db": "0.14.10",
@@ -19,8 +18,8 @@
     "@astrojs/rss": "3.0.0",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "6.0.2",
+    "astro": "5.5.6",
     "framer-motion": "12.6.3",
-    "html2canvas": "1.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hotkeys-hook": "4.6.1",
@@ -30,13 +29,10 @@
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
-    "@astrojs/cloudflare": "12.5.4",
     "@tailwindcss/typography": "^0.5.9",
-    "astro": "5.9.1",
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0",
-    "prettier-plugin-tailwindcss": "^0.5.4",
-    "wrangler": "4.19.1"
+    "prettier-plugin-tailwindcss": "^0.5.4"
   },
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }

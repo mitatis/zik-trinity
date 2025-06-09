@@ -35,14 +35,6 @@ const slug = Astro.url.pathname.split('/').filter(Boolean).pop() || ''; // Ensur
       <h1 class=" mb-4 text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
         {title}
       </h1>
-      <!-- <div class="flex items-center gap-x-4 text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-       
-        <FormattedDate date={pubDate} />
-        {updatedDate && (
-          <span>更新于 <FormattedDate date={updatedDate} /></span>
-        )}
-         
-      </div> -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-y-2 sm:gap-x-4 text-sm text-zinc-500 dark:text-zinc-400 mb-6 ">
         {pubDate && (
                     <time datetime={pubDate.toISOString()} class="flex items-center gap-1.5">
@@ -187,36 +179,6 @@ const slug = Astro.url.pathname.split('/').filter(Boolean).pop() || ''; // Ensur
 </script>
 
 <style>
-  /* .poem-title{
-    font-family:;
-  }
-  .poem-body{
-    
-  } */
-  
-    /* ——  Poetry‑first minimal layout  —— */
-
-  /* .poem-container {
-    max-width: 96rem;
-    margin: 0 auto;
-    font-family: "Noto Serif SC", serif ;
-    line-height: 1;
-    text-align: center;
-    white-space: pre-wrap;     
-  }
-  .
-
-
-  :global(.poem-body p) {
-    margin: 0 0 0 0 !important;
-  }
-
-  :global(.poem-body > *:first-child) {
-    margin-top: 0 !important; 
-  }
-  :global(.poem-body) {
-        font-size: 1rem;     
-  } */
 
 
   /* Article entrance animation */

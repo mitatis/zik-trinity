@@ -1,7 +1,5 @@
-name = "main"
-workers_dev = true
-compatibility_date = "2025-06-08"
-compatibility_flags = ["nodejs_compat"]
+name = "lab"
+compatibility_date = "2025-06-09"
 
 [assets]
 directory = "./dist"
