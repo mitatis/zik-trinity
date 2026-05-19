@@ -4,8 +4,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:content": "node scripts/prepare-content.mjs",
+    "predev": "pnpm run prepare:content",
     "dev": "astro dev",
+    "prestart": "pnpm run prepare:content",
     "start": "astro dev",
+    "prebuild": "pnpm run prepare:content -- --fresh",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
