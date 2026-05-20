@@ -1,6 +1,7 @@
 # build output
 dist/
 .output/
+.content/
 
 # dependencies
 node_modules/
@@ -26,5 +27,7 @@ pnpm-debug.log*
 
 # Astro
 .astro/
+src/content/blog/
+src/content/poetry/
 
 .vercel
