@@ -9,6 +9,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     --theme-transition: 0.3s ease;
+    --font-serif-cn: "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif;
   }
 
   html {
@@ -17,7 +18,7 @@
   }
 
   body {
-    @apply min-h-screen bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100;
+    @apply min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -99,13 +100,77 @@
   animation-delay: 0.4s;
 }
 
-/* Smooth hover transitions */
+/* Smooth hover transitions without layout drift */
 a, button {
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
-a:hover, button:hover {
-  transform: translateY(-1px);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.font-serif-cn {
+  font-family: var(--font-serif-cn);
+}
+
+.editorial-rule {
+  @apply border-t border-zinc-200 dark:border-zinc-800;
+}
+
+.editorial-kicker {
+  @apply text-xs font-semibold uppercase tracking-[0.28em] text-teal-700 dark:text-teal-300;
+}
+
+.editorial-link {
+  @apply text-teal-700 underline decoration-teal-700/30 underline-offset-4 transition-colors hover:text-teal-900 hover:decoration-teal-800 dark:text-teal-300 dark:decoration-teal-300/30 dark:hover:text-teal-100;
+}
+
+.page-shell {
+  @apply mx-auto w-full max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pt-12;
+}
+
+.page-hero {
+  @apply border-b border-zinc-200/80 pb-14 text-center dark:border-zinc-800 sm:pb-16;
+}
+
+.page-title {
+  @apply font-serif-cn text-[clamp(3.5rem,8vw,6.5rem)] font-semibold leading-[1.06] tracking-[0.08em] text-zinc-950 dark:text-zinc-50;
+}
+
+.page-subtitle {
+  @apply mx-auto mt-7 max-w-2xl text-sm leading-8 text-zinc-600 dark:text-zinc-400 sm:text-base;
+}
+
+.paper-row {
+  @apply border-b border-zinc-200/80 dark:border-zinc-800;
+}
+
+.paper-link {
+  @apply text-teal-700 transition-colors hover:text-teal-900 dark:text-teal-300 dark:hover:text-teal-100;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
 }
 
 /* Smooth page transitions */

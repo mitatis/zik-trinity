@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const websites = [
+  {
+    name: 'ZIK Trinity',
+    href: '/',
+    label: 'Personal Main Site',
+    description: '我的个人主站，用来放置文章、散诗、图片展示与长期整理的个人表达。它的方向是东方极简、纸面数字感和可持续写作。',
+    stack: ['Astro', 'Tailwind CSS', 'Markdown / MDX', 'Content Collections'],
+  },
+  {
+    name: 'AI-Lab',
+    href: 'https://lab.zik-3.com',
+    label: 'AI Notes & Lab',
+    description: '用于收纳 AI 相关的实验、观察和笔记。它更像一个外部实验室，承接那些不适合放在主站长文里的快速想法。',
+    stack: ['Astro', 'Pagefind', 'Markdown', 'Search'],
+  },
+];
+
+const projectNotes = [
+  {
+    name: 'ZIK Trinity',
+    href: '/',
+    description: '个人主站，承载文章、散诗、图片展示和长期整理的表达。',
+  },
+  {
+    name: 'AI-Lab',
+    href: 'https://lab.zik-3.com',
+    description: 'AI 相关实验与笔记的外部入口，用来放更快速、更松散的观察。',
+  },
+];
+---
+
+<BaseLayout title="项目" description="ZIK Trinity 的项目门户">
+  <section class="mx-auto w-full max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pt-12">
+    <section class="grid gap-4 border-y border-zinc-200/80 py-5 dark:border-zinc-800 lg:grid-cols-3" aria-label="项目门户">
+      {websites.map(site => (
+        <article class="flex min-h-[18rem] flex-col border border-zinc-200/80 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-950/50 sm:p-6">
+          <p class="editorial-kicker">{site.label}</p>
+
+          <h2 class="mt-5 font-serif-cn text-3xl font-semibold tracking-[0.08em] text-zinc-950 dark:text-zinc-50">
+            <a
+              href={site.href}
+              class="underline decoration-dashed decoration-teal-700/70 underline-offset-4 transition-colors hover:text-teal-700 dark:decoration-teal-300/70 dark:hover:text-teal-300"
+              target={site.href.startsWith('http') ? '_blank' : undefined}
+              rel={site.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {site.name}
+            </a>
+          </h2>
+
+          <p class="mt-7 text-sm leading-8 text-zinc-600 dark:text-zinc-400">
+            {site.description}
+          </p>
+
+          <div class="mt-auto flex flex-wrap gap-x-4 gap-y-3 pt-7 text-xs uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500">
+            {site.stack.map(item => <span>{item}</span>)}
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section class="pt-12" aria-label="项目列表">
+      <ul class="list-disc space-y-5 border-y border-zinc-200/80 py-6 pl-5 marker:text-teal-700 dark:border-zinc-800 dark:marker:text-teal-300">
+        {projectNotes.map(project => (
+          <li class="pl-2 text-sm leading-8 text-zinc-600 dark:text-zinc-400 sm:text-base">
+            <a
+              href={project.href}
+              class="font-serif-cn text-lg font-semibold text-zinc-950 underline decoration-dashed decoration-teal-700/70 underline-offset-4 transition-colors hover:text-teal-700 dark:text-zinc-50 dark:decoration-teal-300/70 dark:hover:text-teal-300"
+              target={project.href.startsWith('http') ? '_blank' : undefined}
+              rel={project.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {project.name}
+            </a>
+            <span class="text-zinc-500 dark:text-zinc-500">：</span>
+            <span>{project.description}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </section>
+</BaseLayout>

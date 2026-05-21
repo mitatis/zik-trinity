@@ -53,9 +53,9 @@ const { title, description = "ZIK Trinity" } = Astro.props;
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col">
+  <body class="min-h-screen bg-zinc-50 text-zinc-900 selection:bg-teal-200/70 selection:text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100 dark:selection:bg-teal-500/30 dark:selection:text-zinc-50">
     <!-- Page transition overlay - for smooth transitions between pages -->
     <div id="page-transition" class="fixed inset-0 z-40 bg-white dark:bg-zinc-900 opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center">
       <div class="transition-spinner"></div>
@@ -64,13 +64,13 @@ const { title, description = "ZIK Trinity" } = Astro.props;
     <!-- Background component with dot pattern and ambient glow -->
     <Background />
     
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 w-full flex-grow">
+    <div class="relative z-10 flex min-h-screen flex-col">
       <Navigation />
-      <main class="py-12">
+      <main class="flex-grow pt-20 sm:pt-24">
         <slot />
       </main>
+      <Footer />
     </div>
-    <Footer />
     
     <script>
       // Enhanced SPA transition system with history API
@@ -334,4 +334,3 @@ const { title, description = "ZIK Trinity" } = Astro.props;
   }
 
 </style>
-

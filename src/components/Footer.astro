@@ -1,321 +1,74 @@
 ---
 const currentYear = new Date().getFullYear();
 
-// Define navigation links
-const navLinks = [
-  { text: 'Whisky', href: "/building"},
-  { text: 'AI-Lab', href: "https://lab.zik-3.com"},
-];
-
-// Define social links
 const socialLinks = [
-  // { 
-  //   name: '小红书', 
-  //   href: 'https://www.xiaohongshu.com/user/profile/5f1c5d2b0000000001005e53', 
-  //   icon: `<path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />`
-  // },
-  { 
-    name: 'GitHub', 
-    href: 'https://github.com/mitatis', 
-    icon: `<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>`
+  {
+    name: 'GitHub',
+    href: 'https://github.com/mitatis',
+    icon: `<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>`,
   },
-  { 
-    name: 'LinkedIn', 
-    href: 'https://www.linkedin.com/in/zikai-ai-43a22a36a/', 
-    icon: `<path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>`
-  }
+  {
+    name: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/zikai-ai-43a22a36a/',
+    icon: `<path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>`,
+  },
 ];
-
 ---
 
-<footer class="relative mt-20 overflow-hidden border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
-  <!-- Enhanced decorative elements with animation -->
-  <div class="absolute inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-zinc-100 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-50 theme-transition-all animate-float-slow"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-zinc-100 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-50 theme-transition-all animate-float-slow animation-delay-2000"></div>
-    <div class="absolute top-20 left-1/4 w-40 h-40 bg-zinc-200/50 dark:bg-zinc-700/20 rounded-full blur-2xl opacity-30 theme-transition-all animate-float-slow animation-delay-1000"></div>
-  </div>
-  
-  <div class="relative pt-16 pb-12 px-4 sm:px-6">
-    <div class="max-w-4xl mx-auto">
-      <!-- Main footer content with improved grid layout -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
-        <!-- Brand section - enhanced with better spacing -->
-        <div class="col-span-1 md:col-span-3">
-          <a href="/" class="inline-block group">
-            <div class="flex items-center">
-              <div class="relative w-10 h-10 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 flex items-center justify-center overflow-hidden shadow-lg transform transition-transform group-hover:scale-105">
-                <span class="text-white dark:text-zinc-900 text-xl font-bold theme-transition-all group-hover:scale-110 transition-transform duration-300">ZIK</span>
-                <div class="absolute inset-0 bg-gradient-to-br from-zinc-700 to-zinc-900 dark:from-zinc-300 dark:to-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-              <span class="ml-3 text-xl font-bold text-zinc-900 dark:text-zinc-100 theme-transition-color">Trinity</span>
-            </div>
-          </a>
-          
-          <!-- <p class="mt-4 text-sm text-zinc-600 dark:text-zinc-400 theme-transition-color leading-relaxed">
-            欢迎来到我的博客
-          </p> -->
-          
-          <!-- Enhanced social links with improved hover effects -->
-          <div class="mt-6 flex items-center space-x-4">
+<footer class="mt-16 border-t border-zinc-200/80 dark:border-zinc-800">
+  <div class="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6">
+    <section class="grid grid-cols-[1fr_auto] items-stretch gap-6 border-y border-zinc-200/80 py-7 dark:border-zinc-800 sm:gap-10">
+      <div class="flex h-full flex-col items-start justify-between">
+        <a href="/" class="inline-flex items-center" aria-label="ZIK Trinity">
+          <img src="/favicon.svg" class="h-8 w-8 dark:invert" alt="ZIK Logo" />
+        </a>
+        <div class="mt-6">
+          <div class="h-px w-10 bg-teal-600 dark:bg-teal-300"></div>
+          <div class="mt-4 flex items-center gap-3">
             {socialLinks.map(social => (
-              <a 
-                href={social.href} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                class="group relative flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-300 hover:ring-2 hover:ring-zinc-300 dark:hover:ring-zinc-700 transform hover:-translate-y-1"
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center border border-zinc-200 text-zinc-500 transition-colors hover:border-teal-600 hover:text-teal-700 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-teal-400 dark:hover:text-teal-300"
                 aria-label={social.name}
               >
-                <span class="absolute inset-0 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <svg class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <Fragment set:html={social.icon} />
                 </svg>
               </a>
             ))}
           </div>
         </div>
-        
-        <!-- Quick links with enhanced styling -->
-        <div class="col-span-1 md:col-span-6">
-          <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider theme-transition-color relative inline-block after:content-[''] after:absolute after:w-8 after:h-0.5 after:bg-zinc-300 dark:after:bg-zinc-700 after:bottom-0 after:left-0 pb-2">MORE </h3>
-          <ul class="mt-4 space-y-3">
-            {navLinks.map(link => (
-              <li>
-                <a 
-                target="_blank" rel="noopener noreferrer"
-                  href={link.href} 
-                  class="group flex items-center text-base text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-                >
-                  <span class="relative overflow-hidden inline-block">
-                    <span class="relative z-10">{link.text}</span>
-                    <span class="absolute left-0 bottom-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        <div class="col-span-1 md:col-span-3">
-<h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider theme-transition-color flex items-center w-full md:justify-end md:text-right relative after:content-[''] after:absolute after:w-8 after:h-0.5 after:bg-zinc-300 dark:after:bg-zinc-700 after:bottom-0 after:left-0 md:after:right-0 md:after:left-auto pb-2">
-          CONTACTS
-          </h3>
-          <p class="mt-4 flex items-center w-full md:justify-end md:text-right text-sm text-zinc-600 dark:text-zinc-400 theme-transition-color leading-relaxed">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2">
-                <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
-                <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
-              </svg> zik.ai@outlook.com
-          </p>
-          <p class="mt-4 flex items-center w-full md:justify-end md:text-right text-sm text-zinc-600 dark:text-zinc-400 theme-transition-color leading-relaxed">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2">
-                <path fill-rule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clip-rule="evenodd" />
-              </svg> +86 132-6472-0888
-          </p>
-          
-
-        </div>
-
-
-          
       </div>
-      
-      <!-- Bottom section with enhanced styling -->
-      <div class="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800 theme-transition-all">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p class="text-sm text-zinc-600 dark:text-zinc-400 theme-transition-color">
-            &copy; {currentYear} ZIK Trinity.
-          </p>
-          
-          <div class="flex items-center space-x-2">
-            <span class="text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color">Powered by</span>
-            <a 
-              href="https://astro.build" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              class="group inline-flex items-center text-xs text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-            >
-              <svg class="h-4 w-4 mr-1 text-[#FF5D01] group-hover:animate-pulse" viewBox="0 0 36 36" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M8.833 22.958c.622-1.185 1.832-1.918 3.18-1.918 2.292 0 4.145 1.86 4.145 4.153 0 1.34-.626 2.54-1.601 3.303 1.223-1.299 1.97-3.048 1.97-4.971 0-3.994-3.243-7.233-7.242-7.233-2.818 0-5.26 1.6-6.469 3.933.78-2.912 3.428-5.06 6.577-5.06 3.75 0 6.79 3.035 6.79 6.78 0 2.606-1.468 4.868-3.616 6.002a4.163 4.163 0 0 0 2.285-3.724c0-2.293-1.853-4.153-4.145-4.153-1.348 0-2.558.733-3.18 1.918l1.306-3.03Z" fill="currentColor"/>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M22.155 12.056c-.622 1.185-1.832 1.918-3.18 1.918-2.292 0-4.145-1.86-4.145-4.153 0-1.34.626-2.54 1.601-3.303-1.223 1.299-1.97 3.048-1.97 4.971 0 3.994 3.243 7.233 7.242 7.233 2.818 0 5.26-1.6 6.469-3.933-.78 2.912-3.428 5.06-6.577 5.06-3.75 0-6.79-3.035-6.79-6.78 0-2.606 1.468-4.868 3.616-6.002a4.163 4.163 0 0 0-2.285 3.724c0 2.293 1.853 4.153 4.145 4.153 1.348 0 2.558-.733 3.18-1.918l-1.306 3.03Z" fill="currentColor"/>
-              </svg>
-              <span class="relative">
-                Astro
-                <span class="absolute left-0 bottom-0 w-0 h-0.5 bg-[#FF5D01] transition-all duration-300 group-hover:w-full"></span>
-              </span>
-            </a>
-          </div>
-        </div>
+
+      <div class="flex h-full flex-col items-end justify-between text-right">
+        <a
+          href="https://letterbird.co/mitatis"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 py-2.5 text-sm font-semibold tracking-[0.08em] text-white shadow-sm transition-colors hover:bg-teal-700 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-teal-200 sm:px-6"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a2 2 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          Say Hi
+        </a>
+        <p class="text-sm leading-7 text-zinc-600 dark:text-zinc-400">+86 132-6472-0888</p>
       </div>
+    </section>
+
+    <div class="flex items-center justify-between gap-4 pt-3 text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500">
+      <p>&copy; {currentYear} ZIK Trinity</p>
+      <a
+        href="https://astro.build"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-fit transition-colors hover:text-teal-700 dark:hover:text-teal-300"
+      >
+        Powered by Astro
+      </a>
     </div>
   </div>
 </footer>
-
-<style>
-  /* Theme transition utilities */
-  .theme-transition-all {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-  }
-  
-  .theme-transition-color {
-    transition-property: color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-  }
-  
-  .theme-transition-bg {
-    transition-property: background-color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-  }
-  
-  /* Enhanced animations */
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.7;
-      transform: scale(1.2);
-    }
-  }
-  
-  @keyframes float-slow {
-    0%, 100% {
-      transform: translateY(0) translateX(0);
-    }
-    25% {
-      transform: translateY(-10px) translateX(10px);
-    }
-    50% {
-      transform: translateY(-5px) translateX(-5px);
-    }
-    75% {
-      transform: translateY(10px) translateX(5px);
-    }
-  }
-  
-  .animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  
-  .animate-float-slow {
-    animation: float-slow 20s ease-in-out infinite;
-  }
-  
-  .animation-delay-1000 {
-    animation-delay: 1s;
-  }
-  
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  
-
-  
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(0.8);
-      opacity: 0.8;
-    }
-    80%, 100% {
-      transform: scale(2);
-      opacity: 0;
-    }
-  }
-  
-  /* Marquee animation for text overflow */
-  .marquee-active .marquee-wrapper {
-    display: flex;
-    animation: marquee 15s linear infinite;
-  }
-  
-  .marquee-active .marquee-wrapper > * {
-    white-space: nowrap;
-    padding-right: 24px;
-  }
-  
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  
-  /* Track change animation */
-  .track-change-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    z-index: 20;
-  }
-  
-  .spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid rgba(29, 185, 84, 0.3);
-    border-top-color: #1DB954;
-    border-radius: 50%;
-    animation: spinner 0.8s linear infinite;
-  }
-  
-  @keyframes spinner {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  /* Progress bar glow effect */
-  .progress-glow {
-    animation: glow 2s ease-in-out infinite;
-  }
-  
-  @keyframes glow {
-    0%, 100% {
-      opacity: 0.5;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
-  
-  /* Simplified pulse animation */
-  .pulse-dot {
-    position: relative;
-  }
-  
-  .pulse-dot::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #1DB954;
-    border-radius: 50%;
-    animation: simple-pulse 2s ease-out infinite;
-    transform-origin: center;
-  }
-  
-  @keyframes simple-pulse {
-    0% {
-      transform: scale(1);
-      opacity: 0.7;
-    }
-    100% {
-      transform: scale(2.5);
-      opacity: 0;
-    }
-  }
-</style>
-
-</file>

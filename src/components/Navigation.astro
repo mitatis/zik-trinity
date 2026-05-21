@@ -2,47 +2,65 @@
 import ThemeToggle from './ThemeToggle.astro';
 
 const navItems = [
-  { text: '主页', href: '/' },
+  { text: '首页', href: '/' },
   { text: '文章', href: '/blog' },
+  { text: '散诗集', href: '/poetry' },
+  { text: '项目', href: '/projects' },
   { text: '标签', href: '/tags' },
-  { text: '诗歌', href: '/poetry' },
-  { text: '简介', href: '/about' },
+  { text: '关于', href: '/about' },
 ];
 
 
 // Get current path for active link highlighting
 const pathname = new URL(Astro.request.url).pathname;
-const currentPath = pathname.slice(1); // remove the first "/"
+const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 ---
 
-<header class="py-4 fixed top-0 left-0 right-0 z-40 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800">
-  <div class="max-w-3xl mx-auto px-4 flex items-center justify-between">
+<header class="fixed left-0 right-0 top-0 z-40 border-b border-zinc-200/70 bg-zinc-50/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/85">
+  <div class="mx-auto grid h-16 w-full max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:h-[4.25rem] sm:grid-cols-[1fr_auto_1fr] sm:px-6">
     <!-- Logo -->
-    <a href="/">
-      <img src="/favicon.svg" class="h-8 w-8 dark:invert" alt="ZIK Logo" />
+    <a href="/" class="group flex min-h-11 items-center gap-3 justify-self-start" aria-label="ZIK Trinity">
+      <img src="/favicon.svg" class="h-7 w-7 dark:invert sm:h-8 sm:w-8" alt="ZIK Logo" />
+      <span class="font-serif-cn text-base font-semibold tracking-[0.08em] text-zinc-950 dark:text-zinc-50 sm:text-lg">
+        ZIK Trinity
+      </span>
     </a>
     
     <!-- Desktop Navigation -->
-    <nav class="hidden sm:flex items-center space-x-6">
+    <nav class="hidden items-center justify-center gap-6 md:gap-8 sm:flex" aria-label="主导航">
       {navItems.map(item => {
-        const isActive = currentPath === (item.href === '/' ? '' : item.href.slice(1));
+        const isActive = isActivePath(item.href);
         return (
           <a 
             href={item.href }
-            class={`text-sm font-medium ${isActive 
-              ? 'text-zinc-900 dark:text-white' 
-              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
+            aria-current={isActive ? 'page' : undefined}
+            class={`relative text-[0.82rem] font-medium tracking-[0.12em] transition-colors ${isActive 
+              ? 'text-teal-700 dark:text-teal-300 after:absolute after:-bottom-4 after:left-1/2 after:h-px after:w-8 after:-translate-x-1/2 after:bg-teal-600 dark:after:bg-teal-300' 
+              : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100'}`}
           >
             {item.text}
           </a>
         )
       })}
+    </nav>
+
+    <nav class="hidden items-center justify-end gap-3 sm:flex" aria-label="辅助导航">
+      <a
+        href="/tags"
+        class="flex min-h-10 min-w-10 items-center justify-center rounded-full text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+        aria-label="浏览标签"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+      </a>
       <ThemeToggle />
     </nav>
     
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-button" class="sm:hidden flex items-center" aria-label="Menu">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-zinc-900 dark:text-white">
+    <button id="mobile-menu-button" class="flex min-h-11 items-center justify-self-end rounded-full border border-zinc-200 px-3 text-zinc-900 dark:border-zinc-800 dark:text-white sm:hidden" aria-label="Menu">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
       </svg>
     </button>
@@ -52,7 +70,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
 <!-- Mobile Menu Overlay -->
 <div id="mobile-menu" class="fixed inset-0 z-50 bg-white dark:bg-zinc-900 flex flex-col opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
   <div class="flex justify-between items-center p-4 border-b border-zinc-100 dark:border-zinc-800">
-    <a href="/" class="font-bold text-xl text-zinc-900 dark:text-white">ZIK</a>
+    <a href="/" class="flex items-center gap-3 font-serif-cn text-lg font-semibold tracking-[0.08em] text-zinc-950 dark:text-white" aria-label="ZIK Trinity">
+      <img src="/favicon.svg" class="h-7 w-7 dark:invert" alt="ZIK Logo" />
+      ZIK Trinity
+    </a>
     <button id="close-menu-button" class="text-zinc-900 dark:text-white p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" aria-label="Close menu">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -62,12 +83,12 @@ const currentPath = pathname.slice(1); // remove the first "/"
   
   <nav class="flex-1 flex flex-col items-center justify-center space-y-6 text-center">
     {navItems.map((item, index) => {
-      const isActive = currentPath === (item.href === '/' ? '' : item.href.slice(1));
+      const isActive = isActivePath(item.href);
       return (
         <a 
           href={item.href} 
-          class={`text-lg font-medium mobile-nav-item opacity-0 translate-y-4 ${isActive 
-            ? 'text-zinc-900 dark:text-white' 
+          class={`font-serif-cn text-2xl font-medium mobile-nav-item opacity-0 translate-y-4 ${isActive 
+            ? 'text-teal-700 dark:text-teal-300' 
             : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
           style={`transition-delay: ${index * 0.05}s;`}
         >
@@ -80,9 +101,6 @@ const currentPath = pathname.slice(1); // remove the first "/"
     </div>
   </nav>
 </div>
-
-<!-- Spacer to prevent content from hiding behind fixed header -->
-<div class="h-16"></div>
 
 <script>
   // Enhanced mobile menu toggle with animations
@@ -202,4 +220,3 @@ const currentPath = pathname.slice(1); // remove the first "/"
     backdrop-filter: blur(4px);
   }
 </style>
-
