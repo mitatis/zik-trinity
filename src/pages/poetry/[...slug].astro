@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Poem from '../../layouts/Poem.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
 import readingTime from 'reading-time'; // Thêm import này nếu chưa có
 
 
@@ -17,7 +18,7 @@ export async function getStaticPaths() {
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
   
-  return sortedEntries.map((entry, index) => {
+  return sortedEntries.map((entry) => {
     // Tính toán readingTime từ nội dung markdown
     const readingTimeResult = readingTime(entry.body);
     
@@ -31,71 +32,85 @@ export async function getStaticPaths() {
       readingTimeStr = `${minutes} 分钟`;
     }
     
+    const otherPoems = sortedEntries
+      .filter(poem => poem.slug !== entry.slug)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 6);
+
     return {
       params: { slug: entry.slug },
       props: { 
         entry,
         readingTimeValue: readingTimeStr, // Truyền chuỗi đã định dạng
         readingTimeStats: readingTimeResult, // Truyền toàn bộ thông tin thống kê
-        nextPost: index > 0 ? sortedEntries[index - 1] : null,
-        prevPost: index < sortedEntries.length - 1 ? sortedEntries[index + 1] : null
+        otherPoems
       },
     };
   });
 }
 
-const { entry, nextPost, prevPost, readingTimeValue, readingTimeStats } = Astro.props;
+const { entry, otherPoems = [], readingTimeValue, readingTimeStats } = Astro.props;
 const { Content } = await entry.render();
         // await document.fonts.ready;
 
 // Ghi đè readingTime từ frontmatter nếu có, nếu không thì sử dụng giá trị đã tính
 const finalReadingTime = entry.data.readingTime || readingTimeValue;
+const excerptFor = (poem) => (poem.data.description || poem.body || '')
+  .replace(/<br\s*\/?>/gi, ' ')
+  .replace(/[#*_>`-]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 72);
+
+const galleryPoems = otherPoems.map(poem => ({
+  ...poem,
+  excerpt: excerptFor(poem),
+}));
 ---
 
 
 <Poem {...entry.data}>
     <!-- Main Content - Enhanced with better typography and spacing -->
-    <div ID="main-content" class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-headings:font-semibold prose-a:text-zinc-800 dark:prose-a:text-zinc-300 prose-a:font-medium prose-a:underline-offset-4 hover:prose-a:text-zinc-600 dark:hover:prose-a:text-zinc-100 prose-img:rounded-xl sm:prose-lg prose-base">
+    <div ID="main-content" class="prose prose-zinc mx-auto max-w-none dark:prose-invert prose-p:my-1 prose-p:font-serif-cn prose-p:text-lg prose-p:leading-10 prose-a:text-teal-700 prose-a:decoration-teal-700/30 hover:prose-a:text-teal-900 dark:prose-a:text-teal-300 dark:hover:prose-a:text-teal-100">
       <Content />
     </div>
 
-    <!-- Next/Previous Navigation - Improved responsive design -->
-    <div class="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 border-t border-zinc-200 dark:border-zinc-800 pt-8 sm:pt-12">
-      {prevPost && (
-        <a 
-          href={`/poetry/${prevPost.slug}`} 
-          class="group relative flex flex-col h-full p-4 sm:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-        >
-          <div class="absolute inset-0 bg-gradient-to-r from-zinc-100 to-transparent dark:from-zinc-800 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <span class="relative z-10 text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:-translate-x-1">
-              <path d="m15 18-6-6 6-6"></path>
-            </svg>
-            上一首
-          </span>
-          <h3 class="text-base sm:text-lg font-medium text-zinc-900 dark:text-white line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
-            {prevPost.data.title}
-          </h3>
-        </a>
-      )}
-      {nextPost && (
-        <a 
-          href={`/poetry/${nextPost.slug}`} 
-          class="group relative flex flex-col h-full p-4 sm:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 hover:-translate-y-1 md:text-right overflow-hidden"
-        >
-          <div class="absolute inset-0 bg-gradient-to-l from-zinc-100 to-transparent dark:from-zinc-800 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <span class="relative z-10 text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 md:justify-end">
-            下一首
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1">
-              <path d="m9 18 6-6-6-6"></path>
-            </svg>
-          </span>
-          <h3 class="text-base sm:text-lg font-medium text-zinc-900 dark:text-white line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
-            {nextPost.data.title}
-          </h3>
-        </a>
-      )}
-    </div>
+    {otherPoems.length > 0 && (
+      <section slot="after-article" class="mx-auto w-full max-w-5xl px-4 pb-24 sm:px-6">
+        <div class="border-t border-zinc-200 pt-12 dark:border-zinc-800">
+          <div class="mb-8 flex flex-col gap-3 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
+            <div>
+              <p class="editorial-kicker">Gallery</p>
+              <h2 class="mt-3 font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50">
+                随机读几首
+              </h2>
+            </div>
+            <a href="/poetry" class="text-sm font-medium text-zinc-500 transition-colors hover:text-teal-700 dark:text-zinc-400 dark:hover:text-teal-300">
+              返回诗集
+            </a>
+          </div>
+
+          <div class="grid gap-px overflow-hidden border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-2 lg:grid-cols-3">
+            {galleryPoems.map((poem) => (
+                <a
+                  href={`/poetry/${poem.slug}/`}
+                  class="group min-h-52 bg-zinc-50 p-6 text-left transition-colors hover:bg-white dark:bg-zinc-950 dark:hover:bg-zinc-900"
+                >
+                  <time datetime={poem.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-500">
+                    <FormattedDate date={poem.data.pubDate} />
+                  </time>
+                  <h3 class="mt-6 font-serif-cn text-2xl font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">
+                    {poem.data.title}
+                  </h3>
+                  <p class="mt-4 line-clamp-3 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
+                    {poem.excerpt}
+                  </p>
+                </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
   </Poem>
 
 <script>

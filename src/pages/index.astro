@@ -3,486 +3,181 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
-// Get all blog posts
 const allPosts = await getCollection('blog');
+const allPoems = await getCollection('poetry');
 
-// Get the 3 most recent posts
-const recentPosts = allPosts
+const posts = allPosts
   .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const poems = allPoems
+  .filter(poem => !poem.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const recentPosts = posts.slice(0, 4);
+const recentPoems = poems.slice(0, 4);
+const visualEntries = [...posts, ...poems]
+  .filter(entry => entry.data.heroImage || entry.data.image)
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
 
-// Get all unique tags from posts
-const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].slice(0, 5);
+const imageFor = (entry) => {
+  const image = entry?.data?.heroImage || entry?.data?.image;
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  if (typeof image === 'object' && 'src' in image) return image.src;
+  return '';
+};
+const pathFor = (entry) => entry.collection === 'poetry' ? `/poetry/${entry.slug}` : `/blog/${entry.slug}`;
+
+const excerptFor = (entry) => {
+  const source = entry?.data?.description || entry?.body || '';
+  return source
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/[#*_>`-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 72);
+};
 ---
 
-<Layout title="ZIK Trinity">
-  <!-- Hero Section with improved mobile responsiveness -->
-  <section class="py-10 sm:py-16 md:py-20 px-4 sm:px-6 theme-transition-all">
-    <div class="max-w-2xl mx-auto relative">
-      <!-- Adjusted blob positions and sizes for better mobile appearance -->
-      <div class="absolute -top-10 sm:-top-20 -left-10 sm:-left-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-100 dark:bg-zinc-800/50 rounded-full blur-3xl opacity-50 animate-blob theme-transition-bg"></div>
-      <div class="absolute -bottom-10 sm:-bottom-20 -right-10 sm:-right-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-200 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-30 animate-blob animation-delay-2000 theme-transition-bg"></div>
-      
-      <div class="relative text-left sm:text-left">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color hero-text">
-          <span class="block">见字如晤</span>
-          <span class="block mt-1">这是我的数字空间</span>
-          <span class="block mt-1 relative">
-            <span class="relative inline-block">
-              ZIK-Trinity
-              <span class="absolute -bottom-1 left-0 w-full h-1 bg-zinc-800 dark:bg-zinc-200 transform origin-left theme-transition-bg"></span>
-            </span>
-          </span>
-        </h1>
-        <p class="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed theme-transition-color max-w-lg mx-auto sm:mx-0">
-          欢迎来到我的个人博客站<br/>这里有我对科技、哲思和一切事物的主观输出
-        </p>
-        <div class="mt-6 sm:mt-8 md:mt-10 flex flex-wrap gap-3 sm:gap-4 md:gap-6 justify-center sm:justify-start">
-          <a 
-            href="/about" 
-            class="group relative inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all duration-300 theme-transition-color min-h-[44px]"
-          >
-            <span>认识一下</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full theme-transition-bg"></span>
-          </a>
-        </div>
-      </div>
+<Layout title="ZIK Trinity" description="见字如晤，这是 ZIK Trinity 的个人数字空间。">
+  <section class="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-12">
+    <div class="relative pb-16 text-center sm:pb-20">
+      <p class="font-serif-cn text-sm tracking-[0.28em] text-zinc-500 dark:text-zinc-500">书写与哲思，记录与表达。</p>
+      <h1 class="mt-10 font-serif-cn text-[clamp(3.5rem,9vw,7.5rem)] font-semibold leading-[1.04] tracking-[0.08em] text-zinc-950 dark:text-zinc-50">
+        见字如晤
+      </h1>
+      <p class="mt-5 font-serif-cn text-xl tracking-[0.22em] text-zinc-900 dark:text-zinc-100 sm:text-2xl">ZIK Trinity</p>
+      <div class="mx-auto mt-5 h-px w-12 bg-teal-600 dark:bg-teal-300"></div>
+      <p class="mx-auto mt-9 max-w-xl text-sm leading-8 text-zinc-600 dark:text-zinc-400">
+        这里收纳文章、散诗与一些仍在成形的念头。
+      </p>
     </div>
   </section>
 
-  <!-- Featured Post Section - Improved for mobile -->
-  <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
-    <div class="max-w-3xl mx-auto">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 md:mb-12">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color text-center sm:text-left">最新</h2>
-        <a 
-          href="/blog" 
-          class="group relative text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 self-center sm:self-auto theme-transition-color min-h-[44px] flex items-center justify-center"
-        >
-          <span class="flex items-center gap-1">
-            查看全部
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </span>
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full theme-transition-bg"></span>
-        </a>
+  <section class="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20">
+    <div class="grid border-y border-zinc-200/80 dark:border-zinc-800 md:grid-cols-2">
+      <a href="/blog" class="group flex min-h-44 flex-col items-center justify-center px-8 py-10 text-center transition-colors hover:bg-white/60 dark:hover:bg-zinc-900/40 md:border-r md:border-zinc-200/80 md:dark:border-zinc-800">
+        <h2 class="font-serif-cn text-3xl font-semibold tracking-[0.12em] text-zinc-950 dark:text-zinc-50">文章</h2>
+        <p class="mt-5 max-w-sm text-sm leading-7 text-zinc-600 dark:text-zinc-400">关于文学、电影、思想和生活的随笔与评论。</p>
+        <span class="mt-6 text-sm font-medium tracking-[0.12em] text-teal-700 transition-colors group-hover:text-teal-900 dark:text-teal-300 dark:group-hover:text-teal-100">进入文章 »</span>
+      </a>
+
+      <a href="/poetry" class="group flex min-h-44 flex-col items-center justify-center px-8 py-10 text-center transition-colors hover:bg-white/60 dark:hover:bg-zinc-900/40">
+        <h2 class="font-serif-cn text-3xl font-semibold tracking-[0.12em] text-zinc-950 dark:text-zinc-50">散诗集</h2>
+        <p class="mt-5 max-w-sm text-sm leading-7 text-zinc-600 dark:text-zinc-400">在语言的缝隙里，收集存在的剪影。</p>
+        <span class="mt-6 text-sm font-medium tracking-[0.12em] text-teal-700 transition-colors group-hover:text-teal-900 dark:text-teal-300 dark:group-hover:text-teal-100">进入散诗集 »</span>
+      </a>
+    </div>
+  </section>
+
+  {visualEntries.length > 0 && (
+    <section class="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20" aria-labelledby="visual-notes-title">
+      <div class="mb-6 flex items-end justify-between gap-4 border-b border-zinc-200/80 pb-4 dark:border-zinc-800">
+        <div>
+          <p class="editorial-kicker">Visual Notes</p>
+          <h2 id="visual-notes-title" class="mt-2 font-serif-cn text-2xl font-semibold tracking-[0.08em] text-zinc-950 dark:text-zinc-50">图像札记</h2>
+        </div>
       </div>
-      
-      <!-- Improved grid for better mobile layout -->
-      <div class="grid gap-6 sm:gap-8 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {recentPosts.map((post, index) => (
-          <article class="group relative flex flex-col items-start hover-3d theme-transition-element max-w-sm mx-auto sm:mx-0 w-full">
-            <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 dark:bg-zinc-800/50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl theme-transition-bg"></div>
-            
-            {post.data.image && (
-              <div class="relative z-10 w-full aspect-video mb-4 overflow-hidden rounded-lg">
-                <img 
-                  src={post.data.image} 
-                  alt={post.data.title}
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  width="400"
-                  height="225"
-                />
-              </div>
-            )}
-            
-            <div class="relative z-10 flex items-center flex-wrap gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color justify-start sm:justify-start w-full">
-              <time datetime={post.data.pubDate.toISOString()} class="font-medium">
-                <FormattedDate date={post.data.pubDate} locale="long" />
-              </time>
-              <span class="relative z-10 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 sm:px-3 py-1 sm:py-1.5 font-medium text-zinc-600 dark:text-zinc-300 theme-transition-all">
-                {post.data.readingTime}
-              </span>
-            </div>
-            
-            <h3 class="relative z-10 mt-3 text-lg sm:text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors theme-transition-color text-center sm:text-left w-full">
-              <a href={`/blog/${post.slug}`} class="min-h-[44px] flex items-center justify-start sm:justify-start">
-                <span class="absolute -inset-x-4 -inset-y-2.5 sm:-inset-x-6 sm:-inset-y-4"></span>
-                {post.data.title}
-              </a>
-            </h3>
-            
-            <p class="relative z-10 mt-2 sm:mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 theme-transition-color text-left sm:text-left w-full">
-              {post.data.description}
+      <div class="grid gap-4 md:grid-cols-3">
+        {visualEntries.map(entry => (
+          <a href={pathFor(entry)} class="group block">
+            <figure class="overflow-hidden border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+              <img
+                src={imageFor(entry)}
+                alt={entry.data.title}
+                loading="lazy"
+                class="aspect-[4/3] w-full object-cover grayscale transition duration-500 group-hover:grayscale-0"
+              />
+            </figure>
+            <p class="mt-3 text-xs uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-500">
+              <FormattedDate date={entry.data.pubDate} />
             </p>
-            
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div class="relative z-10 mt-3 sm:mt-4 flex flex-wrap gap-2 justify-left sm:justify-start w-full">
-                {post.data.tags.slice(0, 3).map(tag => (
-                  <a 
-                    href={`/tags/${tag}`}
-                    class="inline-flex items-center rounded-full bg-zinc-100 px-2 sm:px-3 py-1 text-xs font-medium text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700 transition-colors theme-transition-all min-h-[28px]"
-                  >
-                    #{tag}
-                  </a>
-                ))}
-                {post.data.tags.length > 3 && (
-                  <span class="inline-flex items-center rounded-full bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400 theme-transition-all min-h-[28px]">
-                    +{post.data.tags.length - 3} 更多
-                  </span>
-                )}
-              </div>
-            )}
-            
-            <a 
-              href={`/blog/${post.slug}`}
-              class="relative z-10 mt-3 sm:mt-4 flex items-center text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors theme-transition-color mx-auto sm:mx-0 min-h-[44px]"
-            >
-              <span class="relative overflow-hidden inline-block">
-                <span class="group-hover:-translate-y-full block transition-transform duration-300">阅读文章</span>
-                <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">立即开启</span>
-              </span>
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="ml-1 h-4 w-4 stroke-current transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M6.75 5.75 9.25 8l-2.5 2.25" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </a>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Topics/Tags Section - Improved for mobile -->
-  {allTags.length > 0 && (
-    <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 theme-transition-color text-center sm:text-left">探索主题</h2>
-        
-        <!-- Improved grid layout for mobile -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto">
-          {allTags.map(tag => {
-            const tagCount = allPosts.filter(post => post.data.tags && post.data.tags.includes(tag)).length;
-            return (
-              <a 
-                href={`/tags/${tag}`}
-                class="group flex flex-col p-3 sm:p-4 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/70 transition-all duration-300 theme-transition-all min-h-[80px] sm:min-h-[90px]"
-              >
-                <div class="flex items-start justify-between mb-2">
-                  <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100 theme-transition-color mr-2">#{tag}</span>
-                  <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full flex-shrink-0 theme-transition-all">
-                    {tagCount} 篇
-                    {/* {tagCount === 1 ? 'post' : 'posts'} */}
-                  </span>
-                </div>
-                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 theme-transition-color">
-                  所有关于 {tag} 的文章
-                </p>
-              </a>
-            )
-          })}
-        </div>
-        
-        <div class="mt-6 sm:mt-8 text-center">
-          <a 
-            href="/tags" 
-            class="inline-flex items-center text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 theme-transition-color min-h-[44px]"
-          >
-            <span>查看主题</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
+            <h3 class="mt-2 font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">
+              {entry.data.title}
+            </h3>
           </a>
-        </div>
+        ))}
       </div>
     </section>
   )}
+
+  <section class="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
+    <div class="mb-5 flex items-end justify-between gap-4">
+      <h2 class="font-serif-cn text-xl font-semibold tracking-[0.12em] text-zinc-950 dark:text-zinc-50">最新文章</h2>
+      <a href="/blog" class="text-sm text-zinc-500 transition-colors hover:text-teal-700 dark:text-zinc-400 dark:hover:text-teal-300">查看全部 ›</a>
+    </div>
+
+    <div class="border-y border-zinc-200/80 dark:border-zinc-800">
+      {recentPosts.length > 0 ? (
+        <div class="divide-y divide-zinc-200/80 dark:divide-zinc-800">
+          {recentPosts.map(post => (
+            <article class={`grid gap-5 py-4 ${imageFor(post) ? 'sm:grid-cols-[7rem_1fr]' : ''}`}>
+              {imageFor(post) && (
+                <a href={`/blog/${post.slug}`} class="block overflow-hidden border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+                  <img src={imageFor(post)} alt={post.data.title} loading="lazy" class="aspect-[4/3] w-full object-cover grayscale transition duration-500 hover:grayscale-0" />
+                </a>
+              )}
+              <a href={`/blog/${post.slug}`} class="group grid gap-4 sm:grid-cols-[7rem_1fr_auto] sm:items-baseline">
+                <time datetime={post.data.pubDate.toISOString()} class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500">
+                  <FormattedDate date={post.data.pubDate} />
+                </time>
+                <div>
+                  <h3 class="font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">
+                    {post.data.title}
+                  </h3>
+                  <p class="mt-1 line-clamp-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                    {excerptFor(post) || '这篇文章正在整理摘要。'}
+                  </p>
+                </div>
+                <span class="text-sm text-zinc-500 dark:text-zinc-500">{post.data.tags?.[0] || '随笔'}</span>
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="grid gap-4 py-5 text-sm leading-7 text-zinc-600 dark:text-zinc-400 sm:grid-cols-[7rem_1fr_auto]">
+          <span class="tabular-nums text-zinc-500 dark:text-zinc-500">-- --</span>
+          <span class="font-serif-cn text-lg text-zinc-900 dark:text-zinc-100">文章正在整理</span>
+          <span class="text-zinc-500 dark:text-zinc-500">书写中</span>
+        </div>
+      )}
+    </div>
+
+    <div class="mt-12 grid gap-12 lg:grid-cols-[0.88fr_1.12fr]">
+      <section aria-labelledby="poem-list-title">
+        <div class="mb-5 flex items-end justify-between gap-4">
+          <h2 id="poem-list-title" class="font-serif-cn text-xl font-semibold tracking-[0.12em] text-zinc-950 dark:text-zinc-50">最近散诗</h2>
+          <a href="/poetry" class="text-sm text-zinc-500 transition-colors hover:text-teal-700 dark:text-zinc-400 dark:hover:text-teal-300">查看全部 ›</a>
+        </div>
+        <div class="divide-y divide-zinc-200/80 border-y border-zinc-200/80 dark:divide-zinc-800 dark:border-zinc-800">
+          {recentPoems.map(poem => (
+            <a href={`/poetry/${poem.slug}`} class={`group grid gap-4 py-5 ${imageFor(poem) ? 'sm:grid-cols-[5.5rem_6.5rem_1fr]' : 'sm:grid-cols-[5.5rem_1fr]'}`}>
+              <time datetime={poem.data.pubDate.toISOString()} class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500">
+                <FormattedDate date={poem.data.pubDate} />
+              </time>
+              {imageFor(poem) && (
+                <span class="block overflow-hidden border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+                  <img src={imageFor(poem)} alt={poem.data.title} loading="lazy" class="aspect-[4/3] w-full object-cover grayscale transition duration-500 group-hover:grayscale-0" />
+                </span>
+              )}
+              <span>
+                <span class="block font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">{poem.data.title}</span>
+                <span class="mt-1 line-clamp-1 block text-sm leading-6 text-zinc-600 dark:text-zinc-400">{excerptFor(poem)}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <aside class="border-y border-zinc-200/80 py-8 dark:border-zinc-800">
+        <p class="editorial-kicker">Editor's Note</p>
+        <p class="mt-6 max-w-2xl font-serif-cn text-2xl leading-10 text-zinc-900 dark:text-zinc-100">
+          我写作，是为了在意义的碎片中打捞秩序；在电影与书籍里，在现实与梦境中，寻找语言仍可能让与我相似的人停留片刻。
+        </p>
+        <div class="mt-7 h-px w-12 bg-teal-600 dark:bg-teal-300"></div>
+      </aside>
+    </div>
+  </section>
 </Layout>
-
-<script>
-  // Add hover effect for cards on touch devices
-  document.addEventListener('DOMContentLoaded', () => {
-    // Check if it's a touch device
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    if (isTouchDevice) {
-      const cards = document.querySelectorAll('.hover-3d');
-      
-      cards.forEach(card => {
-        card.addEventListener('touchstart', () => {
-          card.classList.add('is-touched');
-        });
-        
-        card.addEventListener('touchend', () => {
-          setTimeout(() => {
-            card.classList.remove('is-touched');
-          }, 300);
-        });
-      });
-      
-      // Disable hover animations on touch devices for better performance
-      document.documentElement.classList.add('touch-device');
-    }
-    
-    // Improved viewport height fix for mobile browsers
-    const setVh = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-    
-    // Set initial value
-    setVh();
-    
-    // Update on resize and scroll to prevent content shifting
-    window.addEventListener('resize', setVh);
-    
-    // Use a debounced scroll handler to prevent performance issues
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-      if (scrollTimeout) {
-        window.cancelAnimationFrame(scrollTimeout);
-      }
-      
-      scrollTimeout = window.requestAnimationFrame(() => {
-        // Lock width during scroll
-        document.body.style.width = '100%';
-        document.body.style.overflowX = 'hidden';
-      });
-    });
-    
-    // Fix for iOS Safari address bar height changes
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      // Force the layout to use the initial viewport size
-      document.documentElement.style.setProperty('--initial-vh', `${window.innerHeight * 0.01}px`);
-      
-      // Apply fixed height to sections to prevent resizing
-      const sections = document.querySelectorAll('section');
-      sections.forEach(section => {
-        section.style.width = '100%';
-      });
-    }
-    
-    // Improved theme change handler that preserves scroll position and provides smoother transitions
-    document.addEventListener('themeChanged', () => {
-      // Store current scroll position
-      const scrollPosition = window.scrollY;
-      
-      // Create a temporary overlay for smoother transition
-      const overlay = document.createElement('div');
-      overlay.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background-color: ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
-        z-index: 9999;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      `;
-      document.body.appendChild(overlay);
-      
-      // Fade in overlay
-      requestAnimationFrame(() => {
-        overlay.style.opacity = '0.5';
-        
-        // Update theme-transition elements without forcing reflow of entire page
-        requestAnimationFrame(() => {
-          document.querySelectorAll('.theme-transition-all, .theme-transition-bg, .theme-transition-color')
-            .forEach(el => {
-              // Apply a subtle animation instead of a hard reset
-              el.style.transition = 'all 0.5s ease';
-            });
-          
-          // Fade out overlay after transition completes
-          setTimeout(() => {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-              overlay.remove();
-            }, 300);
-          }, 300);
-        });
-      });
-      
-      // Restore scroll position (prevents jumping to top)
-      if (scrollPosition > 0) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: scrollPosition,
-            behavior: 'auto' // Use 'auto' to prevent animation
-          });
-        }, 10);
-      }
-    });
-    
-    // Fix theme inconsistency issues by checking theme on visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        const storedTheme = localStorage.getItem('theme');
-        const currentThemeIsDark = document.documentElement.classList.contains('dark');
-        
-        if (storedTheme === 'dark' && !currentThemeIsDark) {
-          document.documentElement.classList.add('dark');
-        } else if (storedTheme === 'light' && currentThemeIsDark) {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    });
-    
-    // Add smooth reveal animations for content after loading
-    const animateContent = () => {
-      // Animate hero section
-      const heroElements = document.querySelectorAll('.hero-text span, .hero-text + p, .hero-text ~ div');
-      heroElements.forEach((el, index) => {
-        setTimeout(() => {
-          el.classList.add('animate-reveal');
-        }, 100 + (index * 150));
-      });
-      
-      // Animate posts with staggered delay
-      const articles = document.querySelectorAll('article.group');
-      articles.forEach((article, index) => {
-        setTimeout(() => {
-          article.classList.add('animate-reveal');
-        }, 500 + (index * 150));
-      });
-      
-      // Animate topic cards with staggered delay
-      const topicCards = document.querySelectorAll('a.group.flex.flex-col');
-      topicCards.forEach((card, index) => {
-        setTimeout(() => {
-          card.classList.add('animate-reveal');
-        }, 800 + (index * 100));
-      });
-    };
-    
-    // Run animations after the loading screen is hidden
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      // Check if loading screen is already hidden (page refresh)
-      if (loadingScreen.style.display === 'none') {
-        animateContent();
-      } else {
-        // Wait for loading screen to hide
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.target === loadingScreen && 
-                mutation.type === 'attributes' && 
-                mutation.attributeName === 'style' &&
-                loadingScreen.style.display === 'none') {
-              animateContent();
-              observer.disconnect();
-            }
-          });
-        });
-        
-        observer.observe(loadingScreen, { attributes: true });
-        
-        // Fallback
-        setTimeout(animateContent, 3500);
-      }
-    } else {
-      // If loading screen doesn't exist for some reason
-      animateContent();
-    }
-  });
-  
-  // SPA transition handling for homepage
-  function setupSPATransitions() {
-    // Handle all internal links for SPA transitions
-    document.querySelectorAll('a[href^="/"]').forEach(link => {
-      // Skip links that are anchor links, external links, or already processed
-      if (link.getAttribute('href').includes('#') || 
-          link.getAttribute('target') === '_blank' || 
-          link.hasAttribute('data-spa-handled')) {
-        return;
-      }
-      
-      // Mark as handled to avoid duplicate listeners
-      link.setAttribute('data-spa-handled', 'true');
-      
-      link.addEventListener('click', (e) => {
-        // Don't handle if modifier keys are pressed (for opening in new tab, etc.)
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-          return;
-        }
-        
-        e.preventDefault();
-        const targetHref = link.getAttribute('href');
-        
-        // Trigger page transition animation
-        const pageTransition = document.getElementById('page-transition');
-        if (pageTransition) {
-          pageTransition.classList.remove('opacity-0');
-          pageTransition.classList.add('opacity-100');
-          
-          // Navigate after transition effect
-          setTimeout(() => {
-            window.location.href = targetHref;
-          }, 300);
-        } else {
-          // Fallback if transition element doesn't exist
-          window.location.href = targetHref;
-        }
-      });
-    });
-  }
-  
-  // Initialize on first load
-  document.addEventListener('DOMContentLoaded', setupSPATransitions);
-  
-  // Re-initialize when content changes via Astro's view transitions
-  document.addEventListener('astro:page-load', setupSPATransitions);
-  
-  // For compatibility with custom transition system
-  document.addEventListener('page-transition-complete', setupSPATransitions);
-</script>
-
-<style>
-  /* Fix for theme transition issues */
-  :global(:root) {
-    --theme-transition-duration: 0.5s;
-    --theme-transition-timing: ease;
-  }
-  
-  :global(html), :global(body) {
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  :global(.theme-transition-all) {
-    transition: all var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  :global(.theme-transition-bg) {
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  :global(.theme-transition-color) {
-    transition: color var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  /* Ensure transitions apply to all theme-related properties */
-  :global(*) {
-    transition-property: background-color, border-color, color, fill, stroke, opacity;
-    transition-duration: var(--theme-transition-duration);
-    transition-timing-function: var(--theme-transition-timing);
-  }
-  
-  /* Remove the forced transition disabling which causes flickering */
-  :global(.theme-switching), :global(.theme-switching *) {
-    /* Use a subtle transition instead of none */
-    transition-duration: 0.3s !important;
-  }
-  
-  /* Content reveal animations */
-  .hero-text span, 
-  .hero-text + p, 
-  .hero-text ~ div,
-  article.group,
-  a.group.flex.flex-col {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  
-  .animate-reveal {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-  }
-  
-  /* Rest of your existing styles... */
-</style>
-
