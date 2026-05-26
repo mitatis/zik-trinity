@@ -2,15 +2,17 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
+import { getEntryDate, isPublishedEntry, sortByPubDateDesc } from '../../utils/content';
 
 const allPoems = await getCollection('poetry');
 const sortedPoems = allPoems
-  .filter(poem => !poem.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  .filter(isPublishedEntry)
+  .sort(sortByPubDateDesc);
 
 const groups = Array.from(
   sortedPoems.reduce((map, poem) => {
-    const year = poem.data.pubDate.getFullYear();
+    const year = getEntryDate(poem)?.getFullYear();
+    if (!year) return map;
     const entries = map.get(year) || [];
     entries.push(poem);
     map.set(year, entries);

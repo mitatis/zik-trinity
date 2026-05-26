@@ -14,13 +14,37 @@
 
 ## 内容仓库
 
-文章和诗歌内容已经拆分到独立仓库：
+文章和诗歌内容只在独立仓库维护：
 
 ```text
 https://github.com/mitatis/zik-trinity-content
 ```
 
-网站仓库不再跟踪 `src/content/blog` 与 `src/content/poetry`。执行 `pnpm dev` 或 `pnpm build` 前，脚本会先克隆内容仓库到 `.content/`，再同步到 Astro 需要的 `src/content/` 目录。
+网站仓库不再跟踪正文。`src/content/blog` 与 `src/content/poetry` 只是本地生成目录：执行 `pnpm dev` 或 `pnpm build` 前，脚本会先克隆内容仓库到 `.content/`，再同步到 Astro 需要的 `src/content/` 目录。
+
+以后写文章或诗歌时，只需要在内容仓库中新增或修改文件：
+
+```text
+zik-trinity-content/
+├── blog/      # 博客文章 Markdown
+├── poetry/    # 诗歌 Markdown
+└── assets/    # 文章图片和附件
+```
+
+不要把正文写进本网站仓库的 `src/content/blog` 或 `src/content/poetry`，这些目录会在同步时被覆盖，并且不会进入 Git。
+
+图片也放在内容仓库的 `assets/`。构建时会同步到网站的 `public/content-assets/`，文章中使用公开路径：
+
+```yaml
+heroImage: /content-assets/example.jpg
+image: /content-assets/example.jpg
+```
+
+Markdown 正文中也使用同样路径：
+
+```md
+![说明](/content-assets/example.jpg)
+```
 
 可用环境变量：
 
@@ -28,14 +52,30 @@ https://github.com/mitatis/zik-trinity-content
 CONTENT_REPO_URL=https://github.com/mitatis/zik-trinity-content.git
 CONTENT_REF=main
 CONTENT_DIR=.content
+CONTENT_SOURCE_DIR=../zik-trinity-content
 ```
 
-本地调试内容仓库时，可以临时改用同级本地仓库：
+部署和普通构建默认从 `CONTENT_REPO_URL` 克隆已提交内容。也就是说，外部内容仓库里的文章需要先 commit/push，线上构建才会读到。
+
+本地写作预览时，可以直接读取同级内容仓库工作区，包括尚未提交的草稿：
 
 ```bash
-CONTENT_REPO_URL=../zik-trinity-content pnpm run prepare:content
-pnpm dev
+CONTENT_SOURCE_DIR=../zik-trinity-content pnpm dev
 ```
+
+如果开发服务器已经在运行，修改外部内容仓库后可重新同步一次：
+
+```bash
+CONTENT_SOURCE_DIR=../zik-trinity-content pnpm run prepare:content
+```
+
+需要清理本地同步副本时：
+
+```bash
+pnpm run content:clean
+```
+
+这只会移除 `.content/`、`src/content/blog/`、`src/content/poetry/`、`public/content-assets/` 和 Astro 内容缓存；下次 `pnpm dev` 或 `pnpm build` 会自动重新同步，不会动外部内容仓库。
 
 ## 部署
 
@@ -87,7 +127,8 @@ pnpm preview
 ├── public/             # Static assets
 ├── src/
 │   ├── components/     # Reusable UI components
-│   ├── content/        # Astro content config; blog/poetry are synced from content repo
+│   ├── content/        # local sync workspace; blog/poetry are generated from content repo
+│   ├── content.config.ts # Astro content collection definitions
 │   ├── layouts/        # Page layouts
 │   ├── pages/          # Pages and routes
 │   ├── styles/         # CSS and Tailwind

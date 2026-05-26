@@ -1,7 +1,10 @@
 # build output
 dist/
 .output/
+
+# synced from the external content repository
 .content/
+public/content-assets/
 
 # dependencies
 node_modules/

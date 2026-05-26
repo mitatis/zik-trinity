@@ -1,14 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntryTags, isPublishedEntry } from '../../utils/content';
 
-const allPosts = await getCollection('blog');
-const tags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sort();
+const allPosts = (await getCollection('blog')).filter(isPublishedEntry);
+const tags = [...new Set(allPosts.flatMap(getEntryTags))].sort();
 
 const sortedTags = tags
   .map(tag => ({
     name: tag,
-    count: allPosts.filter(post => post.data.tags?.includes(tag)).length,
+    count: allPosts.filter(post => getEntryTags(post).includes(tag)).length,
   }))
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN'));
 ---

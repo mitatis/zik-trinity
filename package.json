@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "prepare:content": "node scripts/prepare-content.mjs",
+    "content:clean": "node scripts/prepare-content.mjs --clean",
     "predev": "pnpm run prepare:content",
     "dev": "astro dev",
     "prestart": "pnpm run prepare:content",

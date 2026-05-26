@@ -2,16 +2,15 @@
 import { getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import readingTime from 'reading-time'; // Thêm import này nếu chưa có
+import { isPublishedEntry, sortByPubDateDesc } from '../../utils/content';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection('blog');
+  const blogEntries = (await getCollection('blog')).filter(isPublishedEntry);
   
   // Sort entries by date for better next/prev navigation
-  const sortedEntries = [...blogEntries].sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
+  const sortedEntries = [...blogEntries].sort(sortByPubDateDesc);
   
   return sortedEntries.map((entry, index) => {
     // Tính toán readingTime từ nội dung markdown
