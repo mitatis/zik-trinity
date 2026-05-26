@@ -2,23 +2,24 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { isPublishedEntry, sortByPubDateDesc } from '../utils/content';
 
 const allPosts = await getCollection('blog');
 const allPoems = await getCollection('poetry');
 
 const posts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  .filter(isPublishedEntry)
+  .sort(sortByPubDateDesc);
 
 const poems = allPoems
-  .filter(poem => !poem.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  .filter(isPublishedEntry)
+  .sort(sortByPubDateDesc);
 
 const recentPosts = posts.slice(0, 4);
 const recentPoems = poems.slice(0, 4);
 const visualEntries = [...posts, ...poems]
   .filter(entry => entry.data.heroImage || entry.data.image)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .sort(sortByPubDateDesc)
   .slice(0, 3);
 
 const imageFor = (entry) => {

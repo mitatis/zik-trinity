@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Poem from '../../layouts/Poem.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import readingTime from 'reading-time'; // Thêm import này nếu chưa có
+import { isPublishedEntry, sortByPubDateDesc } from '../../utils/content';
 
 
 
@@ -11,12 +12,10 @@ const { slug } = Astro.params;
 
 export const prerender = true;
 export async function getStaticPaths() {
-  const poetryEntries = await getCollection('poetry');
+  const poetryEntries = (await getCollection('poetry')).filter(isPublishedEntry);
   
   // Sort entries by date for better next/prev navigation
-  const sortedEntries = [...poetryEntries].sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
+  const sortedEntries = [...poetryEntries].sort(sortByPubDateDesc);
   
   return sortedEntries.map((entry) => {
     // Tính toán readingTime từ nội dung markdown

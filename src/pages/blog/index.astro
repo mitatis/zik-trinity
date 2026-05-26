@@ -2,15 +2,17 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
+import { getEntryDate, isPublishedEntry, sortByPubDateDesc } from '../../utils/content';
 
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  .filter(isPublishedEntry)
+  .sort(sortByPubDateDesc);
 
 const groups = Array.from(
   sortedPosts.reduce((map, post) => {
-    const year = post.data.pubDate.getFullYear();
+    const year = getEntryDate(post)?.getFullYear();
+    if (!year) return map;
     const entries = map.get(year) || [];
     entries.push(post);
     map.set(year, entries);
