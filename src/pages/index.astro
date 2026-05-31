@@ -272,21 +272,33 @@ const excerptFor = (entry) => {
             class="group grid gap-3 py-5 transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 sm:grid-cols-[8rem_1fr_auto]"
             data-presence-row="discord"
           >
-            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Discord</span>
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Lanyard</span>
             <span class="min-w-0">
               <span class="block font-serif-cn text-lg font-semibold text-zinc-950 dark:text-zinc-50" data-discord-title>连接 Lanyard 后显示当前活动</span>
-              <span class="mt-1 line-clamp-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-discord-detail>在线状态、游戏、Spotify 与所有公开活动会显示在这里。</span>
+              <span class="mt-1 line-clamp-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-discord-detail>Discord 在线状态、游戏、Spotify 与所有公开活动会显示在这里。</span>
             </span>
             <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-discord-status>Waiting</span>
           </a>
 
-          <div class="grid gap-3 py-5 sm:grid-cols-[8rem_1fr_auto]" data-presence-row="weread">
-            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">WeRead</span>
+          <a
+            href="https://steamcommunity.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group grid gap-3 py-5 transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 sm:grid-cols-[8rem_1fr_auto]"
+            data-presence-row="steam"
+          >
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Steam</span>
             <span class="min-w-0">
-              <span class="block font-serif-cn text-lg font-semibold text-zinc-950 dark:text-zinc-50" data-weread-title>连接微信读书后显示最近阅读</span>
-              <span class="mt-1 line-clamp-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-weread-detail>最近正在读的几本书名和进度会显示在这里。</span>
+              <span class="block font-serif-cn text-lg font-semibold text-zinc-950 dark:text-zinc-50" data-steam-title>连接 Steam Web API 后显示游戏状态</span>
+              <span class="mt-1 line-clamp-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-steam-detail>当前游戏、最近玩过和成就概览会显示在这里。</span>
             </span>
-            <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-weread-status>Waiting</span>
+            <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-steam-status>Waiting</span>
+          </a>
+
+          <div class="py-5" data-presence-row="weread">
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">WeRead</span>
+            <span class="mt-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-weread-detail>最近正在读的三本书会显示在这里。</span>
+            <span class="mt-4 block space-y-3" data-weread-books></span>
           </div>
         </div>
       </aside>
@@ -340,12 +352,15 @@ const excerptFor = (entry) => {
     panel.dataset.presenceHandled = 'true';
 
     const discordRow = panel.querySelector('[data-presence-row="discord"]');
+    const steamRow = panel.querySelector('[data-presence-row="steam"]');
     const discordTitle = panel.querySelector('[data-discord-title]');
     const discordDetail = panel.querySelector('[data-discord-detail]');
     const discordStatus = panel.querySelector('[data-discord-status]');
-    const wereadTitle = panel.querySelector('[data-weread-title]');
+    const steamTitle = panel.querySelector('[data-steam-title]');
+    const steamDetail = panel.querySelector('[data-steam-detail]');
+    const steamStatus = panel.querySelector('[data-steam-status]');
     const wereadDetail = panel.querySelector('[data-weread-detail]');
-    const wereadStatus = panel.querySelector('[data-weread-status]');
+    const wereadBooks = panel.querySelector('[data-weread-books]');
 
     const statusText = {
       online: 'Online',
@@ -380,8 +395,99 @@ const excerptFor = (entry) => {
       return `${minutes} 分钟`;
     };
 
+    const formatMinutes = (minutes) => {
+      const totalMinutes = Math.max(0, Math.round(Number(minutes || 0)));
+      if (!totalMinutes) return '';
+
+      const hours = Math.floor(totalMinutes / 60);
+      const restMinutes = totalMinutes % 60;
+      if (hours && restMinutes) return `${hours}h${restMinutes}m`;
+      if (hours) return `${hours}h`;
+      return `${restMinutes}m`;
+    };
+
     const setText = (element, value) => {
       if (element) element.textContent = value;
+    };
+
+    const setOptionalText = (element, value) => {
+      if (!element) return;
+      const text = value || '';
+      element.textContent = text;
+      element.hidden = !text;
+    };
+
+    const clearElement = (element) => {
+      if (!element) return;
+      while (element.firstChild) {
+        element.firstChild.remove();
+      }
+    };
+
+    const progressPercent = (value) => {
+      const numberValue = Number(value);
+      if (!Number.isFinite(numberValue)) return null;
+      return Math.max(0, Math.min(100, Math.round(numberValue)));
+    };
+
+    const renderWereadBooks = (books) => {
+      clearElement(wereadBooks);
+      if (!wereadBooks) return;
+
+      books.forEach((book) => {
+        const progress = progressPercent(book.progress);
+        const row = document.createElement('span');
+        row.className = 'grid grid-cols-[3rem_1fr] gap-3 border-t border-zinc-200/70 pt-3 first:border-t-0 first:pt-0 dark:border-zinc-800/80';
+
+        const cover = typeof book.cover === 'string' ? book.cover.replace(/^http:\/\//, 'https://') : '';
+        if (cover) {
+          const image = document.createElement('img');
+          image.src = cover;
+          image.alt = book.title || '微信读书书籍封面';
+          image.loading = 'lazy';
+          image.decoding = 'async';
+          image.className = 'h-[4.25rem] w-12 border border-zinc-200 bg-zinc-100 object-cover dark:border-zinc-800 dark:bg-zinc-900';
+          row.appendChild(image);
+        } else {
+          const fallback = document.createElement('span');
+          fallback.className = 'flex h-[4.25rem] w-12 items-center justify-center border border-zinc-200 bg-zinc-100 font-serif-cn text-lg text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-500';
+          fallback.textContent = '书';
+          row.appendChild(fallback);
+        }
+
+        const content = document.createElement('span');
+        content.className = 'min-w-0 py-0.5';
+
+        const title = document.createElement('span');
+        title.className = 'block truncate font-serif-cn text-base font-semibold text-zinc-950 dark:text-zinc-50';
+        title.textContent = book.title || '未命名书籍';
+        content.appendChild(title);
+
+        const meta = document.createElement('span');
+        meta.className = 'mt-1 block truncate text-sm text-zinc-600 dark:text-zinc-400';
+        meta.textContent = book.author || '作者未知';
+        content.appendChild(meta);
+
+        const progressWrap = document.createElement('span');
+        progressWrap.className = 'mt-2 grid grid-cols-[1fr_auto] items-center gap-3';
+
+        const track = document.createElement('span');
+        track.className = 'h-1 overflow-hidden bg-zinc-200 dark:bg-zinc-800';
+        const bar = document.createElement('span');
+        bar.className = 'block h-full bg-teal-600 dark:bg-teal-300';
+        bar.style.width = `${progress ?? 0}%`;
+        track.appendChild(bar);
+        progressWrap.appendChild(track);
+
+        const label = document.createElement('span');
+        label.className = 'text-xs tabular-nums text-zinc-500 dark:text-zinc-500';
+        label.textContent = progress === null ? '暂无进度' : `${progress}%`;
+        progressWrap.appendChild(label);
+        content.appendChild(progressWrap);
+
+        row.appendChild(content);
+        wereadBooks.appendChild(row);
+      });
     };
 
     const renderDiscord = (discord) => {
@@ -419,42 +525,90 @@ const excerptFor = (entry) => {
       setText(discordStatus, statusText[discord.status] || discord.status || 'Online');
     };
 
+    const renderSteam = (steam) => {
+      if (!steam?.configured) {
+        setText(steamTitle, '等待连接 Steam');
+        setText(steamDetail, '配置 STEAM_API_KEY 和 STEAM_ID 后显示当前游戏、最近玩过和成就概览。');
+        setText(steamStatus, 'Waiting');
+        return;
+      }
+
+      if (steam.error) {
+        setText(steamTitle, 'Steam 状态暂不可用');
+        setText(steamDetail, 'Steam Web API 暂时没有返回可展示的状态。');
+        setText(steamStatus, 'Error');
+        return;
+      }
+
+      if (steamRow instanceof HTMLAnchorElement && steam.profileUrl) {
+        steamRow.href = steam.profileUrl;
+      }
+
+      const recentGames = Array.isArray(steam.recentGames) ? steam.recentGames.slice(0, 3) : [];
+      const recentGameText = recentGames
+        .map((game) => {
+          const playtime = formatMinutes(game.playtime2WeeksMinutes || game.playtimeForeverMinutes);
+          return [game.name, playtime ? `近两周 ${playtime}` : ''].filter(Boolean).join(' · ');
+        })
+        .join(' / ');
+      const achievement = steam.achievementSummary;
+      const achievementText = achievement?.total
+        ? `成就 ${achievement.unlocked}/${achievement.total}${achievement.checkedGames ? ` · ${achievement.checkedGames} 款游戏` : ''}`
+        : '';
+
+      if (steam.isInGame && steam.game?.name) {
+        setText(steamTitle, `Playing · ${steam.game.name}`);
+        setText(steamDetail, [
+          steam.personaName ? `Steam · ${steam.personaName}` : 'Steam',
+          steam.game.id ? `App ${steam.game.id}` : '',
+          achievementText,
+          recentGameText ? `最近 ${recentGameText}` : '',
+        ].filter(Boolean).join(' · '));
+        setText(steamStatus, 'Playing');
+        return;
+      }
+
+      if (recentGames.length) {
+        setText(steamTitle, `最近玩过 · ${recentGames[0].name}`);
+        setText(steamDetail, [recentGameText, achievementText].filter(Boolean).join(' · ') || '当前没有正在游戏。');
+        setText(steamStatus, `${recentGames.length} 款`);
+        return;
+      }
+
+      setText(steamTitle, `${steam.personaName || 'Steam'} · ${steam.status || 'online'}`);
+      setText(steamDetail, achievementText || '当前没有正在游戏，也没有可展示的最近游戏。');
+      setText(steamStatus, steam.status || 'Online');
+    };
+
     const renderWeread = (reading) => {
       if (!reading?.configured) {
-        setText(wereadTitle, '等待连接微信读书');
-        setText(wereadDetail, '配置 WEREAD_API_KEY 后显示最近正在读的书。');
-        setText(wereadStatus, 'Waiting');
+        setOptionalText(wereadDetail, '配置 WEREAD_API_KEY 后显示最近正在读的三本书。');
+        renderWereadBooks([]);
         return;
       }
 
       if (!Array.isArray(reading.books) || reading.books.length === 0) {
-        setText(wereadTitle, '最近阅读暂不可用');
-        setText(wereadDetail, reading.error ? '微信读书接口暂时没有返回书籍。' : '书架里还没有可展示的阅读进度。');
-        setText(wereadStatus, reading.error ? 'Error' : 'Empty');
+        setOptionalText(wereadDetail, reading.error ? '微信读书接口暂时没有返回书籍。' : '书架里还没有可展示的阅读进度。');
+        renderWereadBooks([]);
         return;
       }
 
       const books = reading.books.slice(0, 3);
       const primary = books[0];
-      const title = `${primary.title}${primary.progress !== null && primary.progress !== undefined ? ` · ${primary.progress}%` : ''}`;
-      const detail = books
-        .map((book) => {
-          const parts = [book.title];
-          if (book.progress !== null && book.progress !== undefined) parts.push(`${book.progress}%`);
-          if (book.author) parts.push(book.author);
-          return parts.join(' · ');
-        })
-        .join(' / ');
       const lastReadAt = formatTime(primary.lastReadAt);
       const duration = formatSeconds(primary.readingTimeSeconds);
+      const readingSummary = [
+        lastReadAt ? `上次阅读：${lastReadAt}` : '上次阅读：暂无记录',
+        duration ? `累计 ${duration}` : '',
+      ].filter(Boolean).join(' · ');
 
-      setText(wereadTitle, title);
-      setText(wereadDetail, [detail, lastReadAt ? `上次阅读 ${lastReadAt}` : '', duration ? `累计 ${duration}` : ''].filter(Boolean).join(' · '));
-      setText(wereadStatus, `${books.length} 本`);
+      setOptionalText(wereadDetail, readingSummary);
+      renderWereadBooks(books);
     };
 
     const renderFallback = () => {
       renderDiscord(null);
+      renderSteam(null);
       renderWeread(null);
     };
 
@@ -471,6 +625,7 @@ const excerptFor = (entry) => {
 
         const payload = await response.json();
         renderDiscord(payload.discord);
+        renderSteam(payload.steam);
         renderWeread(payload.reading);
       } catch {
         renderFallback();
