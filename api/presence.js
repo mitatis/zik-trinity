@@ -25,6 +25,16 @@ const activityTypeLabels = {
   5: 'Competing',
 }
 
+const steamPersonaStates = {
+  0: 'offline',
+  1: 'online',
+  2: 'busy',
+  3: 'away',
+  4: 'snooze',
+  5: 'looking_to_trade',
+  6: 'looking_to_play',
+}
+
 const normalizeDiscordActivity = (activity = {}) => {
   const emoji = activity.emoji?.name || activity.emoji?.id || ''
 
@@ -97,6 +107,156 @@ const getDiscordPresence = async () => {
       : null,
     kv: data.kv && typeof data.kv === 'object' ? data.kv : {},
     updatedAt: new Date().toISOString(),
+  }
+}
+
+const getSteamPresence = async () => {
+  const apiKey = normalizeText(process.env.STEAM_API_KEY)
+  const steamId = normalizeText(process.env.STEAM_ID)
+  if (!apiKey || !steamId) {
+    return {
+      configured: false,
+      status: 'unconfigured',
+      isInGame: false,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
+  const summaryParams = new URLSearchParams({
+    key: apiKey,
+    steamids: steamId,
+  })
+  const response = await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?${summaryParams}`, {
+    headers: { accept: 'application/json' },
+  })
+
+  if (!response.ok) {
+    return {
+      configured: true,
+      error: `steam_${response.status}`,
+      status: 'unknown',
+      isInGame: false,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
+  const payload = await response.json()
+  const player = payload?.response?.players?.[0]
+  if (!player) {
+    return {
+      configured: true,
+      error: 'steam_player_not_found',
+      status: 'unknown',
+      isInGame: false,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
+  const gameName = normalizeText(player.gameextrainfo)
+  const gameId = normalizeText(player.gameid)
+  const recentGames = await getSteamRecentGames(apiKey, steamId)
+  const achievementSummary = await getSteamAchievementSummary(apiKey, steamId, [
+    gameId,
+    ...recentGames.map((game) => game.appId),
+  ])
+
+  return {
+    configured: true,
+    status: steamPersonaStates[Number(player.personastate)] || 'unknown',
+    isInGame: Boolean(gameName || gameId),
+    personaName: normalizeText(player.personaname),
+    profileUrl: normalizeText(player.profileurl),
+    avatar: normalizeText(player.avatarmedium || player.avatarfull || player.avatar),
+    game: {
+      id: gameId,
+      name: gameName || (gameId ? `Steam App ${gameId}` : ''),
+    },
+    recentGames,
+    achievementSummary,
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+const getSteamRecentGames = async (apiKey, steamId) => {
+  const limit = Math.max(1, Math.min(10, Number(process.env.STEAM_RECENT_LIMIT || 3)))
+  const params = new URLSearchParams({
+    key: apiKey,
+    steamid: steamId,
+    count: String(limit),
+    format: 'json',
+  })
+
+  try {
+    const response = await fetch(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?${params}`, {
+      headers: { accept: 'application/json' },
+    })
+    if (!response.ok) return []
+
+    const payload = await response.json()
+    const games = payload?.response?.games
+    if (!Array.isArray(games)) return []
+
+    return games.map((game) => ({
+      appId: normalizeText(game.appid),
+      name: normalizeText(game.name),
+      playtime2WeeksMinutes: Number(game.playtime_2weeks || 0) || 0,
+      playtimeForeverMinutes: Number(game.playtime_forever || 0) || 0,
+      iconUrl: game.img_icon_url
+        ? `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`
+        : '',
+    })).filter((game) => game.appId && game.name)
+  } catch {
+    return []
+  }
+}
+
+const getSteamAchievementSummary = async (apiKey, steamId, candidateAppIds) => {
+  const limit = Math.max(0, Math.min(5, Number(process.env.STEAM_ACHIEVEMENT_GAME_LIMIT || 3)))
+  const appIds = Array.from(new Set(candidateAppIds.map(normalizeText).filter(Boolean))).slice(0, limit)
+  if (!appIds.length) {
+    return {
+      checkedGames: 0,
+      unlocked: 0,
+      total: 0,
+    }
+  }
+
+  const summaries = await Promise.all(appIds.map(async (appId) => {
+    const params = new URLSearchParams({
+      key: apiKey,
+      steamid: steamId,
+      appid: appId,
+      l: 'schinese',
+    })
+
+    try {
+      const response = await fetch(`https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?${params}`, {
+        headers: { accept: 'application/json' },
+      })
+      if (!response.ok) return null
+
+      const payload = await response.json()
+      const achievements = payload?.playerstats?.achievements
+      if (!Array.isArray(achievements)) return null
+
+      return {
+        appId,
+        gameName: normalizeText(payload?.playerstats?.gameName),
+        unlocked: achievements.filter((achievement) => Number(achievement.achieved) === 1).length,
+        total: achievements.length,
+      }
+    } catch {
+      return null
+    }
+  }))
+
+  const games = summaries.filter(Boolean)
+
+  return {
+    checkedGames: games.length,
+    unlocked: games.reduce((sum, game) => sum + game.unlocked, 0),
+    total: games.reduce((sum, game) => sum + game.total, 0),
+    games,
   }
 }
 
@@ -214,8 +374,9 @@ const getWereadReading = async () => {
 }
 
 const getPresence = async () => {
-  const [discordResult, readingResult] = await Promise.allSettled([
+  const [discordResult, steamResult, readingResult] = await Promise.allSettled([
     getDiscordPresence(),
+    getSteamPresence(),
     getWereadReading(),
   ])
 
@@ -225,6 +386,9 @@ const getPresence = async () => {
     discord: discordResult.status === 'fulfilled'
       ? discordResult.value
       : { configured: Boolean(process.env.LANYARD_USER_ID), error: 'discord_error', activities: [] },
+    steam: steamResult.status === 'fulfilled'
+      ? steamResult.value
+      : { configured: Boolean(process.env.STEAM_API_KEY && process.env.STEAM_ID), error: 'steam_error', isInGame: false },
     reading: readingResult.status === 'fulfilled'
       ? readingResult.value
       : { configured: Boolean(process.env.WEREAD_API_KEY), error: 'weread_error', books: [] },
