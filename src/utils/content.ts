@@ -5,7 +5,7 @@ type ContentEntry = {
 }
 
 export const getEntryDate = (entry: ContentEntry): Date | null => {
-  const value = entry.data.pubDate
+  const value = entry.data.pubDate ?? entry.data.date
 
   if (value instanceof Date) {
     return Number.isNaN(value.getTime()) ? null : value
