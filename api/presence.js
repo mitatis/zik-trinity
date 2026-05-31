@@ -155,6 +155,7 @@ const getSteamPresence = async () => {
   const gameName = normalizeText(player.gameextrainfo)
   const gameId = normalizeText(player.gameid)
   const recentGames = await getSteamRecentGames(apiKey, steamId)
+  const topGames = await getSteamTopGames(apiKey, steamId)
   const achievementSummary = await getSteamAchievementSummary(apiKey, steamId, [
     gameId,
     ...recentGames.map((game) => game.appId),
@@ -172,8 +173,29 @@ const getSteamPresence = async () => {
       name: gameName || (gameId ? `Steam App ${gameId}` : ''),
     },
     recentGames,
+    topGames,
     achievementSummary,
     updatedAt: new Date().toISOString(),
+  }
+}
+
+const steamHeaderUrl = (appId) => appId
+  ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${encodeURIComponent(appId)}/header.jpg`
+  : ''
+
+const normalizeSteamGame = (game = {}) => {
+  const appId = normalizeText(game.appid || game.appId)
+
+  return {
+    appId,
+    name: normalizeText(game.name),
+    playtime2WeeksMinutes: Number(game.playtime_2weeks ?? game.playtime2WeeksMinutes ?? 0) || 0,
+    playtimeForeverMinutes: Number(game.playtime_forever ?? game.playtimeForeverMinutes ?? 0) || 0,
+    lastPlayedAt: toIso(game.rtime_last_played),
+    iconUrl: game.img_icon_url
+      ? `https://media.steampowered.com/steamcommunity/public/images/apps/${appId}/${game.img_icon_url}.jpg`
+      : '',
+    headerUrl: steamHeaderUrl(appId),
   }
 }
 
@@ -196,15 +218,37 @@ const getSteamRecentGames = async (apiKey, steamId) => {
     const games = payload?.response?.games
     if (!Array.isArray(games)) return []
 
-    return games.map((game) => ({
-      appId: normalizeText(game.appid),
-      name: normalizeText(game.name),
-      playtime2WeeksMinutes: Number(game.playtime_2weeks || 0) || 0,
-      playtimeForeverMinutes: Number(game.playtime_forever || 0) || 0,
-      iconUrl: game.img_icon_url
-        ? `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`
-        : '',
-    })).filter((game) => game.appId && game.name)
+    return games.map(normalizeSteamGame).filter((game) => game.appId && game.name)
+  } catch {
+    return []
+  }
+}
+
+const getSteamTopGames = async (apiKey, steamId) => {
+  const limit = Math.max(1, Math.min(8, Number(process.env.STEAM_TOP_GAME_LIMIT || 3)))
+  const params = new URLSearchParams({
+    key: apiKey,
+    steamid: steamId,
+    include_appinfo: 'true',
+    include_played_free_games: 'true',
+    format: 'json',
+  })
+
+  try {
+    const response = await fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?${params}`, {
+      headers: { accept: 'application/json' },
+    })
+    if (!response.ok) return []
+
+    const payload = await response.json()
+    const games = payload?.response?.games
+    if (!Array.isArray(games)) return []
+
+    return games
+      .map(normalizeSteamGame)
+      .filter((game) => game.appId && game.name && game.playtimeForeverMinutes > 0)
+      .sort((a, b) => b.playtimeForeverMinutes - a.playtimeForeverMinutes)
+      .slice(0, limit)
   } catch {
     return []
   }
@@ -342,10 +386,13 @@ const getWereadReading = async () => {
   try {
     const shelf = await callWeread('/shelf/sync')
     const limit = Math.max(1, Math.min(6, Number(process.env.WEREAD_BOOK_LIMIT || 3)))
+    const candidateLimit = Math.max(limit, Math.min(24, Number(process.env.WEREAD_CANDIDATE_LIMIT || 12)))
+    const minReadingMinutes = Math.max(0, Number(process.env.WEREAD_MIN_READING_MINUTES || 10) || 0)
+    const minReadingSeconds = minReadingMinutes * 60
     const recentBooks = extractBooks(shelf)
       .filter((book) => normalizeText(book.bookId || book.bookid || book.id))
       .sort((a, b) => toTimestamp(b.readUpdateTime || b.updateTime) - toTimestamp(a.readUpdateTime || a.updateTime))
-      .slice(0, limit)
+      .slice(0, candidateLimit)
 
     const books = await Promise.all(recentBooks.map(async (book) => {
       const bookId = normalizeText(book.bookId || book.bookid || book.id)
@@ -357,10 +404,14 @@ const getWereadReading = async () => {
         return normalizeBook(book)
       }
     }))
+    const displayBooks = books
+      .filter((book) => minReadingSeconds === 0 || book.readingTimeSeconds >= minReadingSeconds)
+      .slice(0, limit)
 
     return {
       configured: true,
-      books,
+      books: displayBooks,
+      minReadingMinutes,
       updatedAt: new Date().toISOString(),
     }
   } catch (error) {
