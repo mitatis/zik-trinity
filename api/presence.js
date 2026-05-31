@@ -155,7 +155,6 @@ const getSteamPresence = async () => {
   const gameName = normalizeText(player.gameextrainfo)
   const gameId = normalizeText(player.gameid)
   const recentGames = await getSteamRecentGames(apiKey, steamId)
-  const topGames = await getSteamTopGames(apiKey, steamId)
   const achievementSummary = await getSteamAchievementSummary(apiKey, steamId, [
     gameId,
     ...recentGames.map((game) => game.appId),
@@ -173,7 +172,6 @@ const getSteamPresence = async () => {
       name: gameName || (gameId ? `Steam App ${gameId}` : ''),
     },
     recentGames,
-    topGames,
     achievementSummary,
     updatedAt: new Date().toISOString(),
   }
@@ -219,36 +217,6 @@ const getSteamRecentGames = async (apiKey, steamId) => {
     if (!Array.isArray(games)) return []
 
     return games.map(normalizeSteamGame).filter((game) => game.appId && game.name)
-  } catch {
-    return []
-  }
-}
-
-const getSteamTopGames = async (apiKey, steamId) => {
-  const limit = Math.max(1, Math.min(8, Number(process.env.STEAM_TOP_GAME_LIMIT || 3)))
-  const params = new URLSearchParams({
-    key: apiKey,
-    steamid: steamId,
-    include_appinfo: 'true',
-    include_played_free_games: 'true',
-    format: 'json',
-  })
-
-  try {
-    const response = await fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?${params}`, {
-      headers: { accept: 'application/json' },
-    })
-    if (!response.ok) return []
-
-    const payload = await response.json()
-    const games = payload?.response?.games
-    if (!Array.isArray(games)) return []
-
-    return games
-      .map(normalizeSteamGame)
-      .filter((game) => game.appId && game.name && game.playtimeForeverMinutes > 0)
-      .sort((a, b) => b.playtimeForeverMinutes - a.playtimeForeverMinutes)
-      .slice(0, limit)
   } catch {
     return []
   }
@@ -370,7 +338,8 @@ const normalizeBook = (book = {}, progress = {}) => {
     cover: normalizeText(book.cover),
     progress: Number.isFinite(progressValue) ? Math.max(0, Math.min(100, progressValue)) : null,
     lastReadAt,
-    readingTimeSeconds: Number(progress.recordReadingTime || book.recordReadingTime || 0) || 0,
+    readingTimeSeconds: (Number(progress.recordReadingTime || book.recordReadingTime || 0) || 0)
+      || ((Number(progress.readingTime || book.readingTime || 0) || 0) * 60),
   }
 }
 

@@ -66,7 +66,7 @@ CONTENT_SOURCE_DIR=../zik-trinity-content pnpm dev
 https://github.com/mitatis/zik-trinity-content
 ```
 
-本站仓库只保留同步机制和集合定义，不维护长期正文。`scripts/prepare-content.mjs` 会在 `pnpm dev`、`pnpm start` 和 `pnpm build` 前克隆/更新内容仓库到 `.content/`，再把 `blog/` 与 `poetry/` 同步到 Astro 需要的 `src/content/blog/` 与 `src/content/poetry/`。
+本站仓库只保留同步机制和集合定义，不维护长期正文。`scripts/prepare-content.mjs` 会在 `pnpm dev`、`pnpm start` 和 `pnpm build` 前克隆/更新内容仓库到 `.content/`，再把 `blog/`、`poetry/` 与 `journal/` 同步到 Astro 需要的 `src/content/blog/`、`src/content/poetry/` 与 `src/content/journal/`。
 
 默认构建读取 `CONTENT_REPO_URL` 指向的 Git 内容，因此外部仓库中的文章需要先 commit/push，线上构建才会读到。若要在本地预览同级内容仓库里的未提交草稿，可使用：
 
@@ -81,18 +81,20 @@ CONTENT_SOURCE_DIR=../zik-trinity-content pnpm dev
 ```ts
 const blog = defineCollection({ type: 'content' })
 const poetry = defineCollection({ type: 'content' })
+const journal = defineCollection({ type: 'content' })
 ```
 
-`src/content/blog/`、`src/content/poetry/` 与 `.content/` 都是本地生成目录，已被 `.gitignore` 忽略。后续写文章或诗歌时，应只在外部内容仓库中修改：
+`src/content/blog/`、`src/content/poetry/`、`src/content/journal/` 与 `.content/` 都是本地生成目录，已被 `.gitignore` 忽略。后续写文章、诗歌或日志时，应只在外部内容仓库中修改：
 
 ```text
 zik-trinity-content/
-├── blog/      博客文章 Markdown
-├── poetry/    诗歌 Markdown
-└── assets/    文章图片和附件
+├── blog/              博客文章 Markdown
+├── poetry/            诗歌 Markdown
+├── journal/           日志 Markdown
+└── content-assets/    文章图片和附件
 ```
 
-图片也放在内容仓库 `assets/`，构建时同步到网站仓库的 `public/content-assets/`。文章 frontmatter 和 Markdown 正文统一引用公开路径，例如 `/content-assets/example.jpg`。
+图片统一放在内容仓库 `content-assets/`，构建时同步到网站仓库的 `public/content-assets/`。文章 frontmatter 和 Markdown 正文可继续引用公开路径，例如 `/content-assets/example.jpg`。为了在内容仓库或 Obsidian 中直接预览，也可以写相对路径，例如 `../content-assets/example.jpg`；同步脚本会在生成网站内容时统一改写成 `/content-assets/example.jpg`。旧的 `assets/` 目录和 `assets/` 引用都不再兼容；如果同步源里还存在旧目录或旧引用，构建会直接报错，必须先改成 `content-assets/`。
 
 目前没有严格 schema，所以 Markdown frontmatter 依赖页面读取字段。常见字段包括：
 
@@ -195,14 +197,14 @@ zik-trinity-content/
 - `src/pages/tags/[tag].astro` 中有构建期 `console.log`，用于输出标签调试信息。
 - 站内存在自定义 SPA 式页面切换脚本，多个组件会用 `data-spa-handled` 避免重复绑定事件。修改导航或链接行为时要注意不要造成重复监听或阻断正常跳转。
 - `ThemeToggle.astro`、`Layout.astro`、`BaseLayout.astro` 都参与主题切换或主题事件处理。调整暗色模式时需要整体检查。
-- `.content/`、`src/content/blog/`、`src/content/poetry/` 和 `public/content-assets/` 都是外部内容仓库同步出来的本地副本。除非任务明确要求调试同步结果，不要在这些目录里长期编辑正文或图片。
+- `.content/`、`src/content/blog/`、`src/content/poetry/`、`src/content/journal/` 和 `public/content-assets/` 都是外部内容仓库同步出来的本地副本。除非任务明确要求调试同步结果，不要在这些目录里长期编辑正文或图片。
 - `dist/`、`.astro/`、`node_modules/` 是生成或依赖目录，常规修改不要触碰。
 
 ## 后续修改建议
 
 - 新增博客文章：在外部仓库 `zik-trinity-content/blog/` 中新增 Markdown，补齐 `title`、`description`、`pubDate`、`tags` 等 frontmatter。
 - 新增诗歌：在外部仓库 `zik-trinity-content/poetry/` 中新增 Markdown，至少补齐 `title` 和 `pubDate`。
-- 新增文章图片：放在外部仓库 `zik-trinity-content/assets/`，在文章中用 `/content-assets/...` 引用。
+- 新增文章图片：放在外部仓库 `zik-trinity-content/content-assets/`，在文章中优先用 `../content-assets/...` 方便内容仓库本地预览；网站同步时会统一转成 `/content-assets/...`。
 - 修改导航：先看 `src/components/Navigation.astro`，再检查页脚 `src/components/Footer.astro` 是否也需要同步。
 - 修改全站布局：优先看 `src/layouts/Layout.astro` 和 `src/layouts/BaseLayout.astro`。
 - 修改博客详情体验：优先看 `src/layouts/BlogPost.astro` 和 `src/pages/blog/[...slug].astro`。

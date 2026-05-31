@@ -20,20 +20,21 @@
 https://github.com/mitatis/zik-trinity-content
 ```
 
-网站仓库不再跟踪正文。`src/content/blog` 与 `src/content/poetry` 只是本地生成目录：执行 `pnpm dev` 或 `pnpm build` 前，脚本会先克隆内容仓库到 `.content/`，再同步到 Astro 需要的 `src/content/` 目录。
+网站仓库不再跟踪正文。`src/content/blog`、`src/content/poetry` 与 `src/content/journal` 只是本地生成目录：执行 `pnpm dev` 或 `pnpm build` 前，脚本会先克隆内容仓库到 `.content/`，再同步到 Astro 需要的 `src/content/` 目录。
 
-以后写文章或诗歌时，只需要在内容仓库中新增或修改文件：
+以后写文章、诗歌或日志时，只需要在内容仓库中新增或修改文件：
 
 ```text
 zik-trinity-content/
-├── blog/      # 博客文章 Markdown
-├── poetry/    # 诗歌 Markdown
-└── assets/    # 文章图片和附件
+├── blog/              # 博客文章 Markdown
+├── poetry/            # 诗歌 Markdown
+├── journal/           # 日志 Markdown
+└── content-assets/    # 文章图片和附件
 ```
 
-不要把正文写进本网站仓库的 `src/content/blog` 或 `src/content/poetry`，这些目录会在同步时被覆盖，并且不会进入 Git。
+不要把正文写进本网站仓库的 `src/content/blog`、`src/content/poetry` 或 `src/content/journal`，这些目录会在同步时被覆盖，并且不会进入 Git。
 
-图片也放在内容仓库的 `assets/`。构建时会同步到网站的 `public/content-assets/`，文章中使用公开路径：
+图片统一放在内容仓库的 `content-assets/`。构建时会同步到网站的 `public/content-assets/`，文章中使用公开路径：
 
 ```yaml
 heroImage: /content-assets/example.jpg
@@ -45,6 +46,14 @@ Markdown 正文中也使用同样路径：
 ```md
 ![说明](/content-assets/example.jpg)
 ```
+
+如果希望在内容仓库或 Obsidian 里直接预览图片，也可以在 Markdown 正文和 frontmatter 中写相对路径：
+
+```md
+![说明](../content-assets/example.jpg)
+```
+
+同步脚本会在生成网站内容时把 `../content-assets/` 与 `content-assets/` 引用统一转成 `/content-assets/`。旧的 `assets/` 目录和 `assets/` 引用都不再兼容；如果同步源里还存在旧目录或旧引用，构建会直接报错，必须先改成 `content-assets/`。
 
 可用环境变量：
 
@@ -75,7 +84,7 @@ CONTENT_SOURCE_DIR=../zik-trinity-content pnpm run prepare:content
 pnpm run content:clean
 ```
 
-这只会移除 `.content/`、`src/content/blog/`、`src/content/poetry/`、`public/content-assets/` 和 Astro 内容缓存；下次 `pnpm dev` 或 `pnpm build` 会自动重新同步，不会动外部内容仓库。
+这只会移除 `.content/`、`src/content/blog/`、`src/content/poetry/`、`src/content/journal/`、`public/content-assets/` 和 Astro 内容缓存；下次 `pnpm dev` 或 `pnpm build` 会自动重新同步，不会动外部内容仓库。
 
 ## 部署
 

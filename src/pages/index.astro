@@ -285,9 +285,9 @@ const excerptFor = (entry) => {
               <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Steam</span>
               <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-steam-status>Waiting</span>
             </span>
-            <span class="mt-2 block font-serif-cn text-lg font-semibold text-zinc-950 dark:text-zinc-50" data-steam-title>连接 Steam Web API 后显示游戏状态</span>
-            <span class="mt-1 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-steam-detail>当前游戏、最近玩过、近两周游玩和游玩最久会显示在这里。</span>
-            <span class="mt-4 grid gap-4 sm:grid-cols-2" data-steam-games></span>
+            <span class="mt-4 block" data-steam-card></span>
+            <span class="mt-5 block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500" data-steam-games-label hidden>最近玩过</span>
+            <span class="mt-3 flex gap-3 overflow-x-auto pb-1" data-steam-games></span>
           </div>
 
           <div class="py-5" data-presence-row="weread">
@@ -350,9 +350,9 @@ const excerptFor = (entry) => {
     const discordTitle = panel.querySelector('[data-discord-title]');
     const discordDetail = panel.querySelector('[data-discord-detail]');
     const discordStatus = panel.querySelector('[data-discord-status]');
-    const steamTitle = panel.querySelector('[data-steam-title]');
-    const steamDetail = panel.querySelector('[data-steam-detail]');
     const steamStatus = panel.querySelector('[data-steam-status]');
+    const steamCard = panel.querySelector('[data-steam-card]');
+    const steamGamesLabel = panel.querySelector('[data-steam-games-label]');
     const steamGames = panel.querySelector('[data-steam-games]');
     const wereadDetail = panel.querySelector('[data-weread-detail]');
     const wereadBooks = panel.querySelector('[data-weread-books]');
@@ -362,6 +362,18 @@ const excerptFor = (entry) => {
       idle: 'Idle',
       dnd: 'DND',
       offline: 'Offline',
+      unconfigured: 'Waiting',
+      unknown: 'Unknown',
+    };
+
+    const steamStatusText = {
+      online: 'Online',
+      offline: 'Offline',
+      away: 'Away',
+      busy: 'Busy',
+      snooze: 'Snooze',
+      looking_to_trade: 'Trade',
+      looking_to_play: 'Play',
       unconfigured: 'Waiting',
       unknown: 'Unknown',
     };
@@ -429,42 +441,99 @@ const excerptFor = (entry) => {
       ? `https://store.steampowered.com/app/${encodeURIComponent(game.appId)}/`
       : 'https://steamcommunity.com/';
 
-    const renderSteamGameSection = (label, games, metric) => {
-      const section = document.createElement('span');
-      section.className = 'block min-w-0';
+    const renderSteamCard = (steam) => {
+      clearElement(steamCard);
+      if (!steamCard) return;
 
-      const title = document.createElement('span');
-      title.className = 'block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500';
-      title.textContent = label;
-      section.appendChild(title);
+      const card = document.createElement(steam?.profileUrl ? 'a' : 'span');
+      if (steam?.profileUrl) {
+        card.href = steam.profileUrl;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+      }
 
-      const list = document.createElement('span');
-      list.className = 'mt-3 block space-y-3';
+      card.className = 'group flex items-center gap-3 border border-zinc-200/80 bg-white/40 p-3 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
 
-      const maxMinutes = Math.max(...games.map((game) => metric === 'recent'
-        ? game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0
-        : game.playtimeForeverMinutes || 0), 1);
+      const avatarWrap = document.createElement('span');
+      avatarWrap.className = 'relative block h-14 w-14 shrink-0 overflow-hidden border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900';
 
-      games.forEach((game) => {
-        const minutes = metric === 'recent'
-          ? game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0
-          : game.playtimeForeverMinutes || 0;
+      if (steam?.avatar) {
+        const avatar = document.createElement('img');
+        avatar.src = steam.avatar.replace(/^http:\/\//, 'https://');
+        avatar.alt = `${steam.personaName || 'Steam'} avatar`;
+        avatar.loading = 'lazy';
+        avatar.decoding = 'async';
+        avatar.className = 'h-full w-full object-cover';
+        avatarWrap.appendChild(avatar);
+      } else {
+        const fallback = document.createElement('span');
+        fallback.className = 'flex h-full w-full items-center justify-center text-xs font-semibold text-zinc-500 dark:text-zinc-500';
+        fallback.textContent = 'ST';
+        avatarWrap.appendChild(fallback);
+      }
+
+      const dot = document.createElement('span');
+      dot.className = steam?.isInGame
+        ? 'absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full bg-teal-500 ring-2 ring-white dark:ring-zinc-950'
+        : 'absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full bg-zinc-400 ring-2 ring-white dark:ring-zinc-950';
+      avatarWrap.appendChild(dot);
+      card.appendChild(avatarWrap);
+
+      const content = document.createElement('span');
+      content.className = 'min-w-0';
+
+      const name = document.createElement('span');
+      name.className = 'block truncate font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300';
+      name.textContent = steam?.personaName || 'Steam';
+      content.appendChild(name);
+
+      const state = document.createElement('span');
+      state.className = steam?.isInGame
+        ? 'mt-1 block truncate text-sm text-teal-700 dark:text-teal-300'
+        : 'mt-1 block truncate text-sm text-zinc-600 dark:text-zinc-400';
+      state.textContent = steam?.isInGame && steam?.game?.name
+        ? `正在玩 ${steam.game.name}`
+        : `${steamStatusText[steam?.status] || steam?.status || 'Online'} on Steam`;
+      content.appendChild(state);
+
+      const meta = document.createElement('span');
+      meta.className = 'mt-1 block truncate text-xs text-zinc-500 dark:text-zinc-500';
+      const achievement = steam?.achievementSummary;
+      meta.textContent = achievement?.total ? `最近游戏成就 ${achievement.unlocked}/${achievement.total}` : 'Steam 社交状态';
+      content.appendChild(meta);
+
+      card.appendChild(content);
+      steamCard.appendChild(card);
+    };
+
+    const renderSteamGames = (steam) => {
+      clearElement(steamGames);
+      if (!steamGames) return;
+
+      const recentGames = Array.isArray(steam?.recentGames) ? steam.recentGames.slice(0, 3) : [];
+      setOptionalText(steamGamesLabel, recentGames.length ? '最近玩过' : '');
+      if (!recentGames.length) return;
+
+      const maxMinutes = Math.max(...recentGames.map((game) => game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0), 1);
+
+      recentGames.forEach((game) => {
+        const minutes = game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0;
         const ratio = Math.max(4, Math.min(100, Math.round((minutes / maxMinutes) * 100)));
         const row = document.createElement('a');
         row.href = gameStoreUrl(game);
         row.target = '_blank';
         row.rel = 'noopener noreferrer';
-        row.className = 'group grid grid-cols-[5.5rem_1fr] gap-3 border-t border-zinc-200/70 pt-3 first:border-t-0 first:pt-0 dark:border-zinc-800/80';
+        row.className = 'group min-w-40 flex-1 overflow-hidden border border-zinc-200/80 bg-white/40 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
 
         const cover = document.createElement('span');
-        cover.className = 'block h-[3.2rem] w-[5.5rem] overflow-hidden border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900';
+        cover.className = 'block h-16 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900';
 
         const image = document.createElement('img');
         image.src = game.headerUrl || game.iconUrl || '';
         image.alt = game.name ? `${game.name} Steam 封面` : 'Steam 游戏封面';
         image.loading = 'lazy';
         image.decoding = 'async';
-        image.className = 'h-full w-full object-cover grayscale transition duration-300 group-hover:grayscale-0';
+        image.className = 'h-full w-full object-cover transition duration-300 group-hover:scale-105';
         image.onerror = () => {
           if (game.iconUrl && image.src !== game.iconUrl) {
             image.src = game.iconUrl;
@@ -476,19 +545,17 @@ const excerptFor = (entry) => {
         row.appendChild(cover);
 
         const content = document.createElement('span');
-        content.className = 'min-w-0 py-0.5';
+        content.className = 'block min-w-0 p-3';
 
         const name = document.createElement('span');
-        name.className = 'block truncate font-serif-cn text-base font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300';
+        name.className = 'block truncate font-serif-cn text-sm font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300';
         name.textContent = game.name || 'Steam 游戏';
         content.appendChild(name);
 
         const meta = document.createElement('span');
-        meta.className = 'mt-1 block truncate text-sm text-zinc-600 dark:text-zinc-400';
+        meta.className = 'mt-1 block truncate text-xs text-zinc-600 dark:text-zinc-400';
         const recentMinutes = game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0;
-        meta.textContent = metric === 'recent'
-          ? `${game.playtime2WeeksMinutes ? '近两周' : '最近'} ${formatMinutes(recentMinutes)}${game.playtimeForeverMinutes ? ` · 总计 ${formatMinutes(game.playtimeForeverMinutes)}` : ''}`
-          : `总计 ${formatMinutes(game.playtimeForeverMinutes)}${game.lastPlayedAt ? ` · 上次 ${formatTime(game.lastPlayedAt)}` : ''}`;
+        meta.textContent = `${game.playtime2WeeksMinutes ? '近两周' : '最近'} ${formatMinutes(recentMinutes)}${game.playtimeForeverMinutes ? ` · 总计 ${formatMinutes(game.playtimeForeverMinutes)}` : ''}`;
         content.appendChild(meta);
 
         const track = document.createElement('span');
@@ -500,28 +567,7 @@ const excerptFor = (entry) => {
         content.appendChild(track);
 
         row.appendChild(content);
-        list.appendChild(row);
-      });
-
-      section.appendChild(list);
-      return section;
-    };
-
-    const renderSteamGames = (steam) => {
-      clearElement(steamGames);
-      if (!steamGames) return;
-
-      const recentGames = Array.isArray(steam?.recentGames) ? steam.recentGames.slice(0, 3) : [];
-      const topGames = Array.isArray(steam?.topGames) ? steam.topGames.slice(0, 3) : [];
-      const sections = [
-        { label: '最近玩过', games: recentGames, metric: 'recent' },
-        { label: '游玩最久', games: topGames, metric: 'total' },
-      ].filter((section) => section.games.length);
-
-      if (!sections.length) return;
-
-      sections.forEach((section) => {
-        steamGames.appendChild(renderSteamGameSection(section.label, section.games, section.metric));
+        steamGames.appendChild(row);
       });
     };
 
@@ -622,63 +668,40 @@ const excerptFor = (entry) => {
 
     const renderSteam = (steam) => {
       if (!steam?.configured) {
-        setText(steamTitle, '等待连接 Steam');
-        setText(steamDetail, '配置 STEAM_API_KEY 和 STEAM_ID 后显示当前游戏、最近玩过和成就概览。');
         setText(steamStatus, 'Waiting');
+        renderSteamCard({
+          personaName: '等待连接 Steam',
+          status: 'unconfigured',
+        });
         renderSteamGames(null);
         return;
       }
 
       if (steam.error) {
-        setText(steamTitle, 'Steam 状态暂不可用');
-        setText(steamDetail, 'Steam Web API 暂时没有返回可展示的状态。');
         setText(steamStatus, 'Error');
+        renderSteamCard({
+          personaName: 'Steam 状态暂不可用',
+          status: 'unknown',
+        });
         renderSteamGames(null);
         return;
       }
 
       const recentGames = Array.isArray(steam.recentGames) ? steam.recentGames.slice(0, 3) : [];
-      const topGames = Array.isArray(steam.topGames) ? steam.topGames.slice(0, 3) : [];
-      const recentGameText = recentGames
-        .map((game) => {
-          const playtime = formatMinutes(game.playtime2WeeksMinutes || game.playtimeForeverMinutes);
-          return [game.name, playtime ? `近两周 ${playtime}` : ''].filter(Boolean).join(' · ');
-        })
-        .join(' / ');
-      const achievement = steam.achievementSummary;
-      const achievementText = achievement?.total
-        ? `成就 ${achievement.unlocked}/${achievement.total}${achievement.checkedGames ? ` · ${achievement.checkedGames} 款游戏` : ''}`
-        : '';
-      const topGameText = topGames.length
-        ? `游玩最久 ${topGames[0].name} · ${formatMinutes(topGames[0].playtimeForeverMinutes)}`
-        : '';
+      renderSteamCard(steam);
+      renderSteamGames(steam);
 
       if (steam.isInGame && steam.game?.name) {
-        setText(steamTitle, `Playing · ${steam.game.name}`);
-        setText(steamDetail, [
-          steam.personaName ? `Steam · ${steam.personaName}` : 'Steam',
-          steam.game.id ? `App ${steam.game.id}` : '',
-          achievementText,
-          recentGameText ? `最近 ${recentGameText}` : '',
-          topGameText,
-        ].filter(Boolean).join(' · '));
         setText(steamStatus, 'Playing');
-        renderSteamGames(steam);
         return;
       }
 
       if (recentGames.length) {
-        setText(steamTitle, `最近玩过 · ${recentGames[0].name}`);
-        setText(steamDetail, [recentGameText, achievementText, topGameText].filter(Boolean).join(' · ') || '当前没有正在游戏。');
         setText(steamStatus, `${recentGames.length} 款`);
-        renderSteamGames(steam);
         return;
       }
 
-      setText(steamTitle, topGames.length ? `游玩最久 · ${topGames[0].name}` : `${steam.personaName || 'Steam'} · ${steam.status || 'online'}`);
-      setText(steamDetail, [achievementText, topGameText].filter(Boolean).join(' · ') || '当前没有正在游戏，也没有可展示的最近游戏。');
       setText(steamStatus, steam.status || 'Online');
-      renderSteamGames(steam);
     };
 
     const renderWeread = (reading) => {
