@@ -21,6 +21,7 @@ pnpm-debug.log*
 .env.local
 .env.development
 .env.production
+.dev.vars
 
 # macOS-specific files
 .DS_Store
@@ -32,5 +33,6 @@ pnpm-debug.log*
 .astro/
 src/content/blog/
 src/content/poetry/
+src/content/journal/
 
 .vercel

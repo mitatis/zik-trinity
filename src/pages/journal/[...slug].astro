@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+import readingTime from 'reading-time';
+import { isPublishedEntry, sortByPubDateDesc } from '../../utils/content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const journalEntries = (await getCollection('journal')).filter(isPublishedEntry);
+  const sortedEntries = [...journalEntries].sort(sortByPubDateDesc);
+
+  return sortedEntries.map((entry, index) => {
+    const readingTimeResult = readingTime(entry.body);
+    const readingTimeValue = readingTimeResult.minutes <= 1
+      ? '小于1分钟'
+      : `${Math.ceil(readingTimeResult.minutes)} 分钟`;
+
+    return {
+      params: { slug: entry.slug },
+      props: {
+        entry,
+        readingTimeValue,
+        nextPost: index > 0 ? sortedEntries[index - 1] : null,
+        prevPost: index < sortedEntries.length - 1 ? sortedEntries[index + 1] : null,
+      },
+    };
+  });
+}
+
+const { entry, nextPost, prevPost, readingTimeValue } = Astro.props;
+const { Content } = await entry.render();
+const finalReadingTime = entry.data.readingTime || readingTimeValue;
+---
+
+<BlogPost {...entry.data} readingTime={finalReadingTime} kicker="Log">
+  <div class="prose prose-zinc max-w-none dark:prose-invert prose-headings:scroll-mt-24 prose-headings:font-serif-cn prose-headings:font-semibold prose-p:leading-8 prose-a:text-teal-700 prose-a:decoration-teal-700/30 prose-a:underline-offset-4 hover:prose-a:text-teal-900 dark:prose-a:text-teal-300 dark:hover:prose-a:text-teal-100 prose-blockquote:border-l-teal-600 prose-blockquote:bg-transparent prose-blockquote:text-zinc-600 dark:prose-blockquote:text-zinc-300 prose-img:rounded-none sm:prose-lg">
+    <Content />
+  </div>
+
+  <div class="mt-12 grid grid-cols-1 gap-6 border-t border-zinc-200 pt-8 dark:border-zinc-800 sm:mt-16 sm:pt-12 md:grid-cols-2">
+    {prevPost && (
+      <a
+        href={`/journal/${prevPost.slug}`}
+        class="group relative flex h-full flex-col border-y border-zinc-200 py-5 transition-colors hover:border-teal-600 dark:border-zinc-800 dark:hover:border-teal-400"
+      >
+        <span class="relative z-10 mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform duration-300 group-hover:-translate-x-1 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"></path>
+          </svg>
+          上一则
+        </span>
+        <h3 class="line-clamp-2 font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">
+          {prevPost.data.title}
+        </h3>
+      </a>
+    )}
+    {nextPost && (
+      <a
+        href={`/journal/${nextPost.slug}`}
+        class="group relative flex h-full flex-col border-y border-zinc-200 py-5 transition-colors hover:border-teal-600 dark:border-zinc-800 dark:hover:border-teal-400 md:text-right"
+      >
+        <span class="relative z-10 mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 md:justify-end">
+          下一则
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </span>
+        <h3 class="line-clamp-2 font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">
+          {nextPost.data.title}
+        </h3>
+      </a>
+    )}
+  </div>
+</BlogPost>

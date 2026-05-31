@@ -4,6 +4,7 @@ import ThemeToggle from './ThemeToggle.astro';
 const navItems = [
   { text: '首页', href: '/' },
   { text: '文章', href: '/blog' },
+  { text: '日志', href: '/journal' },
   { text: '散诗集', href: '/poetry' },
   { text: '项目', href: '/projects' },
   { text: '标签', href: '/tags' },
@@ -17,7 +18,7 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
 ---
 
 <header class="fixed left-0 right-0 top-0 z-40 border-b border-zinc-200/70 bg-zinc-50/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/85">
-  <div class="mx-auto grid h-16 w-full max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:h-[4.25rem] sm:grid-cols-[1fr_auto_1fr] sm:px-6">
+  <div class="mx-auto grid h-16 w-full max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:h-[4.25rem] sm:px-6 md:grid-cols-[1fr_auto_1fr]">
     <!-- Logo -->
     <a href="/" class="group flex min-h-11 items-center gap-3 justify-self-start" aria-label="ZIK Trinity">
       <img src="/favicon.svg" class="h-7 w-7 dark:invert sm:h-8 sm:w-8" alt="ZIK Logo" />
@@ -27,7 +28,7 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
     </a>
     
     <!-- Desktop Navigation -->
-    <nav class="hidden items-center justify-center gap-6 md:gap-8 sm:flex" aria-label="主导航">
+    <nav class="hidden items-center justify-center gap-5 lg:gap-8 md:flex" aria-label="主导航">
       {navItems.map(item => {
         const isActive = isActivePath(item.href);
         return (
@@ -44,7 +45,7 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
       })}
     </nav>
 
-    <nav class="hidden items-center justify-end gap-3 sm:flex" aria-label="辅助导航">
+    <nav class="hidden items-center justify-end gap-3 md:flex" aria-label="辅助导航">
       <a
         href="/tags"
         class="flex min-h-10 min-w-10 items-center justify-center rounded-full text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
@@ -59,7 +60,7 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
     </nav>
     
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-button" class="flex min-h-11 items-center justify-self-end rounded-full border border-zinc-200 px-3 text-zinc-900 dark:border-zinc-800 dark:text-white sm:hidden" aria-label="Menu">
+    <button id="mobile-menu-button" class="flex min-h-11 items-center justify-self-end rounded-full border border-zinc-200 px-3 text-zinc-900 dark:border-zinc-800 dark:text-white md:hidden" aria-label="Menu">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
       </svg>

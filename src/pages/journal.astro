@@ -1,0 +1,382 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import WorkIcon from '../components/WorkIcon.astro';
+import { getEntryDate, getEntryTitle, isDraftEntry, sortByPubDateDesc } from '../utils/content';
+import { getWorkMeta } from '../utils/work';
+
+const allJournalEntries = await getCollection('journal');
+const sortedJournalEntries = allJournalEntries
+  .filter((entry) => !isDraftEntry(entry) && Boolean(getEntryDate(entry)))
+  .sort(sortByPubDateDesc);
+
+const journalPosts = await Promise.all(
+  sortedJournalEntries.map(async (entry) => {
+    const { Content } = await entry.render();
+    return { entry, Content, workMeta: getWorkMeta(entry) };
+  })
+);
+
+const latestPost = journalPosts[0];
+
+const monthKeyFor = (month: number) => String(month).padStart(2, '0');
+const monthLabelFor = (month: number) => `${month}月`;
+const sortRenderedPostsByDateDesc = (a, b) => sortByPubDateDesc(a.entry, b.entry);
+
+const groupJournalPostsByYearMonth = (entries) => {
+  const grouped = new Map();
+
+  entries.forEach((post) => {
+    const date = getEntryDate(post.entry);
+    if (!date) return;
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const yearGroup = grouped.get(year) || new Map();
+    const monthGroup = yearGroup.get(month) || [];
+
+    monthGroup.push(post);
+    yearGroup.set(month, monthGroup);
+    grouped.set(year, yearGroup);
+  });
+
+  return Array.from(grouped.entries())
+    .map(([year, months]) => {
+      const latestMonth = Math.max(...Array.from(months.keys()));
+
+      return {
+        year,
+        latestMonth,
+        months: Array.from(months.entries())
+          .map(([month, entriesForMonth]) => {
+            const posts = [...entriesForMonth].sort(sortRenderedPostsByDateDesc);
+
+            return {
+              month,
+              key: monthKeyFor(month),
+              label: monthLabelFor(month),
+              posts,
+            };
+          })
+          .sort((a, b) => a.month - b.month),
+      };
+    })
+    .sort((a, b) => b.year - a.year);
+};
+
+const journalYears = groupJournalPostsByYearMonth(journalPosts);
+const latestPostDate = latestPost ? getEntryDate(latestPost.entry) : null;
+const defaultSelection = latestPostDate
+  ? {
+      year: latestPostDate.getFullYear(),
+      month: latestPostDate.getMonth() + 1,
+      key: monthKeyFor(latestPostDate.getMonth() + 1),
+    }
+  : null;
+---
+
+<BaseLayout title="日志" description="创业过程中的 daily update、项目进展、思考与问题复盘。">
+  <section class="page-shell">
+    <header class="page-hero">
+      <p class="font-serif-cn text-sm tracking-[0.28em] text-zinc-500 dark:text-zinc-500">Daily updates for the long road.</p>
+      <h1 class="page-title mt-9">日志</h1>
+      <div class="mx-auto mt-5 h-px w-12 bg-teal-600 dark:bg-teal-300"></div>
+      <p class="page-subtitle">
+        记录创业过程里的项目进展、判断、卡点与复盘，把正在发生的事情按日期留下来。
+      </p>
+    </header>
+
+    {journalPosts.length === 0 ? (
+      <div class="mx-auto mt-14 max-w-2xl border-y border-zinc-200/80 py-10 text-center dark:border-zinc-800">
+        <p class="font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50">第一条日志还在路上</p>
+        <p class="mx-auto mt-5 max-w-lg text-sm leading-8 text-zinc-600 dark:text-zinc-400">
+          在内容仓库中新建 <span class="font-mono text-xs">journal/</span> Markdown 后，这里会自动收纳创业过程中的 daily update：进展、思考、问题和阶段性的复盘。
+        </p>
+      </div>
+    ) : (
+      <div class="grid gap-12 pt-14 lg:grid-cols-[14rem_1fr]">
+        <aside
+          class="lg:sticky lg:top-28 lg:self-start"
+          data-journal-year-switcher
+          data-years={JSON.stringify(journalYears.map(({ year }) => year))}
+          data-default-year={defaultSelection?.year}
+          data-default-month={defaultSelection?.month}
+        >
+          <div class="flex items-center justify-between border-y border-zinc-200/80 py-4 dark:border-zinc-800">
+            <button
+              type="button"
+              class="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-teal-300"
+              aria-label="上一年"
+              data-journal-prev-year
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m15 18-6-6 6-6"></path>
+              </svg>
+            </button>
+            <p class="text-center">
+              <span class="editorial-kicker block">Year</span>
+              <span class="mt-1 block font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50" data-journal-current-year>
+                {defaultSelection?.year}
+              </span>
+            </p>
+            <button
+              type="button"
+              class="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-teal-300"
+              aria-label="下一年"
+              data-journal-next-year
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="mt-5">
+            {journalYears.map(({ year, latestMonth, months }) => (
+              <nav
+                class={`grid grid-cols-3 gap-2 lg:grid-cols-2 ${year === defaultSelection?.year ? '' : 'hidden'}`}
+                aria-label={`${year} 年日志月份`}
+                data-journal-month-selector
+                data-year={year}
+                data-latest-month={latestMonth}
+              >
+                {months.map(({ month, label, posts }) => {
+                  const isSelected = year === defaultSelection?.year && month === defaultSelection?.month;
+                  return (
+                    <button
+                      type="button"
+                      class={`group flex min-h-14 flex-col items-center justify-center border px-2 py-2 text-sm transition-colors ${isSelected ? 'border-teal-600 bg-teal-50 text-teal-800 dark:border-teal-300 dark:bg-teal-500/10 dark:text-teal-200' : 'border-zinc-200/80 text-zinc-600 hover:border-teal-600 hover:text-teal-700 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-teal-300 dark:hover:text-teal-300'}`}
+                      aria-pressed={isSelected ? 'true' : 'false'}
+                      data-journal-month-button
+                      data-year={year}
+                      data-month={month}
+                      data-has-posts={posts.length > 0 ? 'true' : 'false'}
+                    >
+                      <span class="font-serif-cn text-base font-semibold">{label}</span>
+                      <span class="mt-1 text-xs text-zinc-500 dark:text-zinc-500">{posts.length} 则</span>
+                    </button>
+                  );
+                })}
+              </nav>
+            ))}
+          </div>
+        </aside>
+
+        <div>
+          {journalYears.flatMap(({ year, months }) =>
+            months.map(({ month, key, label, posts }) => {
+              const isSelected = year === defaultSelection?.year && month === defaultSelection?.month;
+              return (
+                <section
+                  class={isSelected ? '' : 'hidden'}
+                  data-journal-month-panel
+                  data-year={year}
+                  data-month={month}
+                >
+                  <header class="border-b border-zinc-200/80 pb-5 dark:border-zinc-800">
+                    <p class="editorial-kicker">{year}.{key}</p>
+                    <h2 class="mt-3 font-serif-cn text-3xl font-semibold tracking-[0.08em] text-zinc-950 dark:text-zinc-50">
+                      {year} 年 {label}
+                    </h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
+                      {posts.length} 则日志，按时间从新到旧排列。
+                    </p>
+                  </header>
+
+                  {posts.length === 0 ? (
+                    <div class="border-b border-zinc-200/80 py-10 text-sm leading-8 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+                      这个月份还没有公开日志。
+                    </div>
+                  ) : (
+                    <div class="divide-y divide-zinc-200/80 border-b border-zinc-200/80 dark:divide-zinc-800 dark:border-zinc-800">
+                      {posts.map(({ entry, Content, workMeta }) => (
+                        <article id={`journal-${entry.slug}`} class="scroll-mt-28 grid gap-5 py-9 sm:grid-cols-[10rem_1fr]" data-journal-entry aria-label={getEntryTitle(entry) || entry.slug}>
+                          <div class="sm:pr-3">
+                            <time datetime={getEntryDate(entry)?.toISOString()} class="text-sm leading-8 tabular-nums text-zinc-500 dark:text-zinc-500">
+                              <FormattedDate date={getEntryDate(entry)} />
+                            </time>
+                            {workMeta && (
+                              <div class="mt-4 space-y-3 text-xs leading-5 text-zinc-500 dark:text-zinc-500" data-work-summary>
+                                {workMeta.timeRangeLabel && (
+                                  <div class="grid grid-cols-[1.25rem_1fr] gap-2.5">
+                                    <WorkIcon name="clock" tone="accent" />
+                                    <span class="tabular-nums text-zinc-700 dark:text-zinc-300">{workMeta.timeRangeLabel}</span>
+                                  </div>
+                                )}
+                                {workMeta.durationLabel && (
+                                  <div class="grid grid-cols-[1.25rem_1fr] gap-2.5">
+                                    <WorkIcon name="timer" tone="accent" />
+                                    <span>{workMeta.durationLabel}</span>
+                                  </div>
+                                )}
+                                {workMeta.startPlaceLabel && (
+                                  <div class="grid grid-cols-[1.25rem_1fr] gap-2.5">
+                                    <WorkIcon name="work-in" />
+                                    {workMeta.startMapUrl ? (
+                                      <a href={workMeta.startMapUrl} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-teal-700 dark:hover:text-teal-300">
+                                        上班：{workMeta.startPlaceLabel}
+                                      </a>
+                                    ) : (
+                                      <span>上班：{workMeta.startPlaceLabel}</span>
+                                    )}
+                                  </div>
+                                )}
+                                {workMeta.endPlaceLabel && (
+                                  <div class="grid grid-cols-[1.25rem_1fr] gap-2.5">
+                                    <WorkIcon name="work-out" />
+                                    {workMeta.endMapUrl ? (
+                                      <a href={workMeta.endMapUrl} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-teal-700 dark:hover:text-teal-300">
+                                        下班：{workMeta.endPlaceLabel}
+                                      </a>
+                                    ) : (
+                                      <span>下班：{workMeta.endPlaceLabel}</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div
+                            class="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-serif-cn prose-headings:font-semibold prose-headings:tracking-[0.04em] prose-p:my-3 prose-p:leading-8 prose-a:text-teal-700 prose-a:decoration-teal-700/30 prose-a:underline-offset-4 hover:prose-a:text-teal-900 dark:prose-a:text-teal-300 dark:hover:prose-a:text-teal-100 prose-ul:my-3 prose-li:my-1 prose-blockquote:border-l-teal-600 prose-blockquote:bg-transparent prose-blockquote:text-zinc-600 dark:prose-blockquote:text-zinc-300 prose-img:rounded-none [&>*:first-child]:mt-0"
+                            data-journal-entry-body
+                          >
+                            <Content />
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              );
+            })
+          )}
+        </div>
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<script>
+  function setupJournalMonthBrowser() {
+    const root = document.querySelector('[data-journal-year-switcher]');
+    if (!root || root.dataset.journalBrowserHandled === 'true') return;
+
+    root.dataset.journalBrowserHandled = 'true';
+
+    let years = [];
+    try {
+      years = JSON.parse(root.dataset.years || '[]');
+    } catch {
+      years = [];
+    }
+
+    const currentYearLabel = root.querySelector('[data-journal-current-year]');
+    const previousYearButton = root.querySelector('[data-journal-prev-year]');
+    const nextYearButton = root.querySelector('[data-journal-next-year]');
+    const monthSelectors = Array.from(root.querySelectorAll('[data-journal-month-selector]'));
+    const monthButtons = Array.from(root.querySelectorAll('[data-journal-month-button]'));
+    const monthPanels = Array.from(document.querySelectorAll('[data-journal-month-panel]'));
+
+    let activeYear = Number(root.dataset.defaultYear || years[0]);
+    let activeMonth = Number(root.dataset.defaultMonth || 1);
+
+    const getYearIndex = () => years.indexOf(activeYear);
+    const latestMonthForYear = (year) => {
+      const selector = root.querySelector(`[data-journal-month-selector][data-year="${year}"]`);
+      return Number(selector?.dataset.latestMonth || activeMonth || 1);
+    };
+
+    const setButtonState = (button, isActive) => {
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      button.classList.toggle('border-teal-600', isActive);
+      button.classList.toggle('bg-teal-50', isActive);
+      button.classList.toggle('text-teal-800', isActive);
+      button.classList.toggle('dark:border-teal-300', isActive);
+      button.classList.toggle('dark:bg-teal-500/10', isActive);
+      button.classList.toggle('dark:text-teal-200', isActive);
+      button.classList.toggle('border-zinc-200/80', !isActive);
+      button.classList.toggle('text-zinc-600', !isActive);
+      button.classList.toggle('hover:border-teal-600', !isActive);
+      button.classList.toggle('hover:text-teal-700', !isActive);
+      button.classList.toggle('dark:border-zinc-800', !isActive);
+      button.classList.toggle('dark:text-zinc-400', !isActive);
+      button.classList.toggle('dark:hover:border-teal-300', !isActive);
+      button.classList.toggle('dark:hover:text-teal-300', !isActive);
+    };
+
+    const updateView = () => {
+      const yearIndex = getYearIndex();
+
+      if (currentYearLabel) currentYearLabel.textContent = String(activeYear);
+      if (previousYearButton) previousYearButton.disabled = yearIndex >= years.length - 1;
+      if (nextYearButton) nextYearButton.disabled = yearIndex <= 0;
+
+      monthSelectors.forEach((selector) => {
+        selector.classList.toggle('hidden', Number(selector.dataset.year) !== activeYear);
+      });
+
+      monthButtons.forEach((button) => {
+        const isActive = Number(button.dataset.year) === activeYear && Number(button.dataset.month) === activeMonth;
+        setButtonState(button, isActive);
+      });
+
+      monthPanels.forEach((panel) => {
+        const isActive = Number(panel.dataset.year) === activeYear && Number(panel.dataset.month) === activeMonth;
+        panel.classList.toggle('hidden', !isActive);
+      });
+    };
+
+    const activateEntryFromHash = () => {
+      const id = decodeURIComponent(window.location.hash.replace(/^#/, ''));
+      if (!id) return false;
+
+      const target = document.getElementById(id);
+      const panel = target?.closest('[data-journal-month-panel]');
+      if (!target || !panel) return false;
+
+      activeYear = Number(panel.dataset.year);
+      activeMonth = Number(panel.dataset.month);
+      updateView();
+
+      window.setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+
+      return true;
+    };
+
+    monthButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeYear = Number(button.dataset.year);
+        activeMonth = Number(button.dataset.month);
+        updateView();
+      });
+    });
+
+    previousYearButton?.addEventListener('click', () => {
+      const currentIndex = getYearIndex();
+      if (currentIndex < years.length - 1) {
+        activeYear = years[currentIndex + 1];
+        activeMonth = latestMonthForYear(activeYear);
+        updateView();
+      }
+    });
+
+    nextYearButton?.addEventListener('click', () => {
+      const currentIndex = getYearIndex();
+      if (currentIndex > 0) {
+        activeYear = years[currentIndex - 1];
+        activeMonth = latestMonthForYear(activeYear);
+        updateView();
+      }
+    });
+
+    if (!activateEntryFromHash()) updateView();
+    window.addEventListener('hashchange', activateEntryFromHash);
+  }
+
+  setupJournalMonthBrowser();
+  document.addEventListener('DOMContentLoaded', setupJournalMonthBrowser);
+  document.addEventListener('spa-content-loaded', setupJournalMonthBrowser);
+</script>

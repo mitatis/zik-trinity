@@ -1,0 +1,58 @@
+---
+type WorkIconName = 'clock' | 'timer' | 'work-in' | 'work-out'
+
+interface Props {
+  name: WorkIconName
+  tone?: 'accent' | 'muted'
+}
+
+const { name, tone = 'muted' } = Astro.props
+const toneClass = tone === 'accent'
+  ? 'text-teal-700 dark:text-teal-300'
+  : 'text-zinc-500 dark:text-zinc-400'
+---
+
+<span class={`inline-flex h-5 w-5 shrink-0 items-center justify-center ${toneClass}`} data-work-icon={name} aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg" class="block h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    {name === 'clock' && (
+      <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 7.5v4.8l3.2 1.9" />
+      </>
+    )}
+
+    {name === 'timer' && (
+      <>
+        <path d="M9 2h6" />
+        <path d="M12 14l3-3" />
+        <circle cx="12" cy="13" r="7.5" />
+      </>
+    )}
+
+    {name === 'work-in' && (
+      <>
+        <path d="M13.5 21V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V21" />
+        <path d="M4 21h17" />
+        <path d="M17 8h.01" />
+        <circle cx="7.2" cy="6.8" r="1.7" />
+        <path d="M7 9.5l-1.2 3 2.4 1.6 1.3 4" />
+        <path d="M6.2 13.5 4.8 18" />
+        <path d="M9.2 12.2h4.2" />
+        <path d="m11.6 10.4 1.8 1.8-1.8 1.8" />
+      </>
+    )}
+
+    {name === 'work-out' && (
+      <>
+        <path d="M3.5 21V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V21" />
+        <path d="M3 21h18" />
+        <path d="M7 8h.01" />
+        <circle cx="13.6" cy="6.8" r="1.7" />
+        <path d="m13.4 9.5-1.2 3 2.5 1.5 1.2 4.1" />
+        <path d="m12.4 13.5-1.5 4.5" />
+        <path d="M15 12.1h4.1" />
+        <path d="m17.4 10.3 1.8 1.8-1.8 1.8" />
+      </>
+    )}
+  </svg>
+</span>

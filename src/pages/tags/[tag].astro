@@ -8,29 +8,31 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const allPosts = (await getCollection('blog')).filter(isPublishedEntry);
-  const uniqueTags = [...new Set(allPosts.flatMap(getEntryTags))];
+  const allJournalEntries = (await getCollection('journal')).filter(isPublishedEntry);
+  const allTaggedEntries = [...allPosts, ...allJournalEntries];
+  const uniqueTags = [...new Set(allTaggedEntries.flatMap(getEntryTags))];
 
   return uniqueTags.map(tag => {
-    const filteredPosts = allPosts.filter(post =>
-      getEntryTags(post).some(t => t.toLowerCase() === (tag as string).toLowerCase())
+    const filteredEntries = allTaggedEntries.filter(entry =>
+      getEntryTags(entry).some(t => t.toLowerCase() === (tag as string).toLowerCase())
     );
 
     return {
       params: { tag },
-      props: { posts: filteredPosts },
+      props: { entries: filteredEntries },
     };
   });
 }
 
 const { tag } = Astro.params as { tag: string };
-const { posts = [] } = Astro.props;
+const { entries = [] } = Astro.props;
 
-const sortedPosts = posts.length > 0
-  ? [...posts].filter(isPublishedEntry).sort(sortByPubDateDesc)
+const sortedEntries = entries.length > 0
+  ? [...entries].filter(isPublishedEntry).sort(sortByPubDateDesc)
   : [];
 
 const relatedTags = [...new Set(
-  sortedPosts.flatMap(getEntryTags)
+  sortedEntries.flatMap(getEntryTags)
     .filter(t => t !== tag)
 )].slice(0, 8);
 
@@ -51,6 +53,10 @@ const excerptFor = (entry) => {
     .trim()
     .slice(0, 108);
 };
+
+const pathFor = (entry) => entry.collection === 'journal'
+  ? `/journal/${entry.slug}/`
+  : `/blog/${entry.slug}/`;
 ---
 
 <BaseLayout title={`标签：${tag}`}>
@@ -60,7 +66,7 @@ const excerptFor = (entry) => {
       <h1 class="page-title mt-9">#{tag}</h1>
       <div class="mx-auto mt-5 h-px w-12 bg-teal-600 dark:bg-teal-300"></div>
       <p class="page-subtitle">
-        当前有 {sortedPosts.length} 篇文章带有这个标签。
+        当前有 {sortedEntries.length} 篇内容带有这个标签。
       </p>
     </header>
 
@@ -72,39 +78,39 @@ const excerptFor = (entry) => {
       </nav>
     )}
 
-    {sortedPosts.length === 0 ? (
+    {sortedEntries.length === 0 ? (
       <div class="mx-auto mt-14 max-w-2xl border-y border-zinc-200/80 py-10 text-center dark:border-zinc-800">
-        <p class="font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50">没有文章</p>
+        <p class="font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50">没有内容</p>
         <p class="mx-auto mt-5 max-w-lg text-sm leading-8 text-zinc-600 dark:text-zinc-400">
-          这个标签下暂时还没有公开文章。
+          这个标签下暂时还没有公开内容。
         </p>
       </div>
     ) : (
       <div class="mx-auto mt-14 max-w-4xl border-t border-zinc-200/80 dark:border-zinc-800">
-        {sortedPosts.map(post => (
-          <article class={`grid gap-5 border-b border-zinc-200/80 py-7 dark:border-zinc-800 ${imageFor(post) ? 'sm:grid-cols-[8rem_1fr]' : 'sm:grid-cols-[7rem_1fr]'}`}>
-            {imageFor(post) ? (
-              <a href={`/blog/${post.slug}/`} class="overflow-hidden border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
-                <img src={imageFor(post)} alt={post.data.title} class="aspect-[4/3] w-full object-cover grayscale transition duration-500 hover:grayscale-0" loading="lazy" />
+        {sortedEntries.map(entry => (
+          <article class={`grid gap-5 border-b border-zinc-200/80 py-7 dark:border-zinc-800 ${imageFor(entry) ? 'sm:grid-cols-[8rem_1fr]' : 'sm:grid-cols-[7rem_1fr]'}`}>
+            {imageFor(entry) ? (
+              <a href={pathFor(entry)} class="overflow-hidden border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+                <img src={imageFor(entry)} alt={entry.data.title} class="aspect-[4/3] w-full object-cover grayscale transition duration-500 hover:grayscale-0" loading="lazy" />
               </a>
             ) : (
-              <time datetime={post.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
-                <FormattedDate date={post.data.pubDate} />
+              <time datetime={entry.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
+                <FormattedDate date={entry.data.pubDate} />
               </time>
             )}
             <div>
-              {imageFor(post) && (
-                <time datetime={post.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
-                  <FormattedDate date={post.data.pubDate} />
+              {imageFor(entry) && (
+                <time datetime={entry.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
+                  <FormattedDate date={entry.data.pubDate} />
                 </time>
               )}
               <h2 class="mt-2 font-serif-cn text-2xl font-semibold text-zinc-950 dark:text-zinc-50">
-                <a href={`/blog/${post.slug}/`} class="transition-colors hover:text-teal-700 dark:hover:text-teal-300">
-                  {post.data.title}
+                <a href={pathFor(entry)} class="transition-colors hover:text-teal-700 dark:hover:text-teal-300">
+                  {entry.data.title}
                 </a>
               </h2>
               <p class="mt-3 line-clamp-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
-                {excerptFor(post)}
+                {excerptFor(entry)}
               </p>
             </div>
           </article>

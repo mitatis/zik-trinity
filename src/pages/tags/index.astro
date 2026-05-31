@@ -4,12 +4,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getEntryTags, isPublishedEntry } from '../../utils/content';
 
 const allPosts = (await getCollection('blog')).filter(isPublishedEntry);
-const tags = [...new Set(allPosts.flatMap(getEntryTags))].sort();
+const allJournalEntries = (await getCollection('journal')).filter(isPublishedEntry);
+const allTaggedEntries = [...allPosts, ...allJournalEntries];
+const tags = [...new Set(allTaggedEntries.flatMap(getEntryTags))].sort();
 
 const sortedTags = tags
   .map(tag => ({
     name: tag,
-    count: allPosts.filter(post => getEntryTags(post).includes(tag)).length,
+    count: allTaggedEntries.filter(entry => getEntryTags(entry).includes(tag)).length,
   }))
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN'));
 ---
@@ -29,7 +31,7 @@ const sortedTags = tags
       <div class="mx-auto mt-14 max-w-2xl border-y border-zinc-200/80 py-10 text-center dark:border-zinc-800">
         <p class="font-serif-cn text-3xl font-semibold text-zinc-950 dark:text-zinc-50">暂无标签</p>
         <p class="mx-auto mt-5 max-w-lg text-sm leading-8 text-zinc-600 dark:text-zinc-400">
-          当博客文章同步进来后，标签会自动在这里生成。
+          当博客和日志同步进来后，标签会自动在这里生成。
         </p>
       </div>
     ) : (

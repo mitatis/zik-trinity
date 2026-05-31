@@ -15,7 +15,7 @@ const repoUrl =
 const contentRef = process.env.CONTENT_REF || 'main'
 const fresh = process.argv.includes('--fresh') || process.env.CONTENT_FRESH === '1'
 const clean = process.argv.includes('--clean')
-const collections = ['blog', 'poetry']
+const collections = ['blog', 'poetry', 'journal']
 const generatedAssetsDir = join(root, 'public', 'content-assets')
 
 const assertInsideRoot = (path, label) => {
