@@ -100,13 +100,13 @@ const excerptFor = (entry) => {
     {homeWork?.workMeta && (
       <a
         href={homeWorkHref}
-        class="group mx-auto -mt-6 block max-w-2xl border-y border-zinc-200/80 py-5 text-left transition-colors hover:border-zinc-300/90 hover:bg-zinc-50/40 dark:border-zinc-800 dark:hover:border-zinc-700/80 dark:hover:bg-zinc-900/20"
+        class="group mx-auto -mt-6 block w-full max-w-2xl min-w-0 border-y border-zinc-200/80 py-5 text-left transition-colors hover:border-zinc-300/90 hover:bg-zinc-50/40 dark:border-zinc-800 dark:hover:border-zinc-700/80 dark:hover:bg-zinc-900/20"
         data-active-work-card
         data-work-state={homeWorkState}
         data-work-start={homeWork.workMeta.startIso}
       >
-        <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div class="min-w-0">
+        <div class="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div class="min-w-0 flex-1">
             <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">
               <span class="h-2 w-2 rounded-full bg-teal-600 dark:bg-teal-300"></span>
               {homeWorkState === 'active' ? '正在工作中' : '下班了'}
@@ -232,16 +232,16 @@ const excerptFor = (entry) => {
       )}
     </div>
 
-    <div class="mt-12 grid gap-12 lg:grid-cols-[0.88fr_1.12fr]">
-      <section aria-labelledby="poem-list-title">
+    <div class="mt-12 grid min-w-0 gap-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
+      <section class="min-w-0" aria-labelledby="poem-list-title">
         <div class="mb-5 flex items-end justify-between gap-4">
           <h2 id="poem-list-title" class="font-serif-cn text-xl font-semibold tracking-[0.12em] text-zinc-950 dark:text-zinc-50">最近散诗</h2>
           <a href="/poetry" class="text-sm text-zinc-500 transition-colors hover:text-teal-700 dark:text-zinc-400 dark:hover:text-teal-300">查看全部 ›</a>
         </div>
         <div class="divide-y divide-zinc-200/80 border-y border-zinc-200/80 dark:divide-zinc-800 dark:border-zinc-800">
           {recentPoems.map(poem => (
-            <a href={`/poetry/${poem.slug}`} class={`group grid gap-4 py-5 ${imageFor(poem) ? 'sm:grid-cols-[5.5rem_6.5rem_1fr]' : 'sm:grid-cols-[5.5rem_1fr]'}`}>
-              <time datetime={poem.data.pubDate.toISOString()} class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500">
+            <a href={`/poetry/${poem.slug}`} class={`group grid min-w-0 gap-4 py-5 ${imageFor(poem) ? 'sm:grid-cols-[5.5rem_6.5rem_minmax(0,1fr)]' : 'sm:grid-cols-[5.5rem_minmax(0,1fr)]'}`}>
+              <time datetime={poem.data.pubDate.toISOString()} class="min-w-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-500">
                 <FormattedDate date={poem.data.pubDate} />
               </time>
               {imageFor(poem) && (
@@ -249,7 +249,7 @@ const excerptFor = (entry) => {
                   <img src={imageFor(poem)} alt={poem.data.title} loading="lazy" class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
                 </span>
               )}
-              <span>
+              <span class="min-w-0">
                 <span class="block font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300">{poem.data.title}</span>
                 <span class="mt-1 line-clamp-1 block text-sm leading-6 text-zinc-600 dark:text-zinc-400">{excerptFor(poem)}</span>
               </span>
@@ -258,14 +258,14 @@ const excerptFor = (entry) => {
         </div>
       </section>
 
-      <aside class="border-y border-zinc-200/80 py-8 dark:border-zinc-800">
+      <aside class="min-w-0 border-y border-zinc-200/80 py-8 dark:border-zinc-800">
         <p class="editorial-kicker">Editor's Note</p>
         <p class="mt-6 max-w-2xl font-serif-cn text-2xl leading-10 text-zinc-900 dark:text-zinc-100">
           我写作，是为了在意义的碎片中打捞秩序；在电影与书籍里，在现实与梦境中，寻找语言仍可能让与我相似的人停留片刻。
         </p>
         <div class="mt-7 h-px w-12 bg-teal-600 dark:bg-teal-300"></div>
-        <div class="mt-8 divide-y divide-zinc-200/80 border-y border-zinc-200/80 dark:divide-zinc-800 dark:border-zinc-800" data-presence-panel>
-          <div class="py-5" data-presence-row="discord">
+        <div class="mt-8 min-w-0 divide-y divide-zinc-200/80 border-y border-zinc-200/80 dark:divide-zinc-800 dark:border-zinc-800" data-presence-panel>
+          <div class="min-w-0 py-5" data-presence-row="discord">
             <span class="flex flex-wrap items-baseline justify-between gap-3">
               <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Discord</span>
               <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-discord-status>Waiting</span>
@@ -273,17 +273,23 @@ const excerptFor = (entry) => {
             <span class="mt-4 block" data-discord-card></span>
           </div>
 
-          <div class="py-5" data-presence-row="steam">
+          <div class="min-w-0 py-5" data-presence-row="steam">
             <span class="flex flex-wrap items-baseline justify-between gap-3">
               <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Steam</span>
               <span class="text-sm tabular-nums text-zinc-500 dark:text-zinc-500" data-steam-status>Waiting</span>
             </span>
             <span class="mt-4 block" data-steam-card></span>
-            <span class="mt-5 block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500" data-steam-games-label hidden>最近玩过</span>
-            <span class="mt-3 flex gap-3 overflow-x-auto pb-1" data-steam-games></span>
+            <span class="mt-5 flex items-center justify-between gap-3" data-steam-games-header hidden>
+              <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-500" data-steam-games-label>最近玩过</span>
+              <span class="flex items-center gap-1" data-steam-games-controls hidden>
+                <button type="button" class="inline-flex h-8 w-8 items-center justify-center border border-zinc-200/80 bg-white/50 text-lg leading-none text-zinc-600 transition-colors hover:border-teal-600/50 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-400 dark:hover:border-teal-300/50 dark:hover:text-teal-300" data-steam-games-scroll="prev" aria-label="向左滚动 Steam 最近游戏">‹</button>
+                <button type="button" class="inline-flex h-8 w-8 items-center justify-center border border-zinc-200/80 bg-white/50 text-lg leading-none text-zinc-600 transition-colors hover:border-teal-600/50 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-400 dark:hover:border-teal-300/50 dark:hover:text-teal-300" data-steam-games-scroll="next" aria-label="向右滚动 Steam 最近游戏">›</button>
+              </span>
+            </span>
+            <span class="mt-3 flex w-full min-w-0 max-w-full gap-3 overflow-x-auto overscroll-x-contain scroll-smooth pb-1" data-steam-games></span>
           </div>
 
-          <div class="py-5" data-presence-row="weread">
+          <div class="min-w-0 py-5" data-presence-row="weread">
             <span class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">WeRead</span>
             <span class="mt-2 block text-sm leading-6 text-zinc-600 dark:text-zinc-400" data-weread-detail>最近正在读的三本书会显示在这里。</span>
             <span class="mt-4 block space-y-3" data-weread-books></span>
@@ -343,7 +349,11 @@ const excerptFor = (entry) => {
     const discordCard = panel.querySelector('[data-discord-card]');
     const steamStatus = panel.querySelector('[data-steam-status]');
     const steamCard = panel.querySelector('[data-steam-card]');
+    const steamGamesHeader = panel.querySelector('[data-steam-games-header]');
     const steamGamesLabel = panel.querySelector('[data-steam-games-label]');
+    const steamGamesControls = panel.querySelector('[data-steam-games-controls]');
+    const steamGamesPrev = panel.querySelector('[data-steam-games-scroll="prev"]');
+    const steamGamesNext = panel.querySelector('[data-steam-games-scroll="next"]');
     const steamGames = panel.querySelector('[data-steam-games]');
     const wereadDetail = panel.querySelector('[data-weread-detail]');
     const wereadBooks = panel.querySelector('[data-weread-books]');
@@ -428,6 +438,48 @@ const excerptFor = (entry) => {
       return Math.max(0, Math.min(100, Math.round(numberValue)));
     };
 
+    const shouldShowSteamGameControls = () => (
+      steamGames instanceof HTMLElement
+      && window.matchMedia('(min-width: 768px)').matches
+      && steamGames.scrollWidth > steamGames.clientWidth + 2
+    );
+
+    const updateSteamGameControls = () => {
+      if (!(steamGames instanceof HTMLElement) || !(steamGamesControls instanceof HTMLElement)) return;
+
+      const showControls = shouldShowSteamGameControls();
+      steamGamesControls.hidden = !showControls;
+      if (!showControls) return;
+
+      const maxScrollLeft = Math.max(0, steamGames.scrollWidth - steamGames.clientWidth);
+      const currentScrollLeft = Math.max(0, steamGames.scrollLeft);
+      if (steamGamesPrev instanceof HTMLButtonElement) {
+        steamGamesPrev.disabled = currentScrollLeft <= 2;
+      }
+      if (steamGamesNext instanceof HTMLButtonElement) {
+        steamGamesNext.disabled = currentScrollLeft >= maxScrollLeft - 2;
+      }
+    };
+
+    const scrollSteamGames = (direction) => {
+      if (!(steamGames instanceof HTMLElement)) return;
+
+      const scrollDistance = Math.max(160, Math.floor(steamGames.clientWidth * 0.86));
+      steamGames.scrollBy({ left: direction * scrollDistance, behavior: 'smooth' });
+      window.setTimeout(updateSteamGameControls, 260);
+    };
+
+    if (steamGamesPrev instanceof HTMLButtonElement) {
+      steamGamesPrev.addEventListener('click', () => scrollSteamGames(-1));
+    }
+    if (steamGamesNext instanceof HTMLButtonElement) {
+      steamGamesNext.addEventListener('click', () => scrollSteamGames(1));
+    }
+    if (steamGames instanceof HTMLElement) {
+      steamGames.addEventListener('scroll', updateSteamGameControls, { passive: true });
+    }
+    window.addEventListener('resize', updateSteamGameControls);
+
     const renderDiscordCard = (discord) => {
       clearElement(discordCard);
       if (!discordCard) return;
@@ -438,10 +490,10 @@ const excerptFor = (entry) => {
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
       }
-      card.className = 'group block border border-zinc-200/80 bg-white/40 p-3 transition duration-300 hover:-translate-y-0.5 hover:border-indigo-500/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-indigo-400/50 dark:hover:bg-zinc-900/50';
+      card.className = 'group block min-w-0 max-w-full border border-zinc-200/80 bg-white/40 p-3 transition duration-300 hover:-translate-y-0.5 hover:border-indigo-500/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-indigo-400/50 dark:hover:bg-zinc-900/50';
 
       const header = document.createElement('span');
-      header.className = 'flex items-center gap-3';
+      header.className = 'flex min-w-0 items-center gap-3';
 
       const avatarWrap = document.createElement('span');
       avatarWrap.className = 'relative block h-14 w-14 shrink-0 overflow-hidden rounded-full border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900';
@@ -471,7 +523,7 @@ const excerptFor = (entry) => {
       header.appendChild(avatarWrap);
 
       const identity = document.createElement('span');
-      identity.className = 'min-w-0';
+      identity.className = 'min-w-0 flex-1';
 
       const name = document.createElement('span');
       name.className = 'block truncate font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-indigo-700 dark:text-zinc-50 dark:group-hover:text-indigo-300';
@@ -530,7 +582,7 @@ const excerptFor = (entry) => {
         card.rel = 'noopener noreferrer';
       }
 
-      card.className = 'group flex items-center gap-3 border border-zinc-200/80 bg-white/40 p-3 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
+      card.className = 'group flex min-w-0 max-w-full items-center gap-3 border border-zinc-200/80 bg-white/40 p-3 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
 
       const avatarWrap = document.createElement('span');
       avatarWrap.className = 'relative block h-14 w-14 shrink-0 overflow-hidden border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900';
@@ -558,7 +610,7 @@ const excerptFor = (entry) => {
       card.appendChild(avatarWrap);
 
       const content = document.createElement('span');
-      content.className = 'min-w-0';
+      content.className = 'min-w-0 flex-1';
 
       const name = document.createElement('span');
       name.className = 'block truncate font-serif-cn text-lg font-semibold text-zinc-950 transition-colors group-hover:text-teal-700 dark:text-zinc-50 dark:group-hover:text-teal-300';
@@ -588,9 +640,15 @@ const excerptFor = (entry) => {
       clearElement(steamGames);
       if (!steamGames) return;
 
-      const recentGames = Array.isArray(steam?.recentGames) ? steam.recentGames.slice(0, 3) : [];
+      const recentGames = Array.isArray(steam?.recentGames) ? steam.recentGames : [];
       setOptionalText(steamGamesLabel, recentGames.length ? '最近玩过' : '');
-      if (!recentGames.length) return;
+      if (steamGamesHeader instanceof HTMLElement) {
+        steamGamesHeader.hidden = !recentGames.length;
+      }
+      if (!recentGames.length) {
+        updateSteamGameControls();
+        return;
+      }
 
       const maxMinutes = Math.max(...recentGames.map((game) => game.playtime2WeeksMinutes || game.playtimeForeverMinutes || 0), 1);
 
@@ -601,7 +659,7 @@ const excerptFor = (entry) => {
         row.href = gameStoreUrl(game);
         row.target = '_blank';
         row.rel = 'noopener noreferrer';
-        row.className = 'group min-w-40 flex-1 overflow-hidden border border-zinc-200/80 bg-white/40 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
+        row.className = 'group w-40 min-w-40 max-w-[72vw] shrink-0 overflow-hidden border border-zinc-200/80 bg-white/40 transition duration-300 hover:-translate-y-0.5 hover:border-teal-600/50 hover:bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/30 dark:hover:border-teal-300/50 dark:hover:bg-zinc-900/50';
 
         const cover = document.createElement('span');
         cover.className = 'block h-16 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900';
@@ -647,6 +705,8 @@ const excerptFor = (entry) => {
         row.appendChild(content);
         steamGames.appendChild(row);
       });
+
+      window.requestAnimationFrame(updateSteamGameControls);
     };
 
     const renderWereadBooks = (books) => {
@@ -656,7 +716,7 @@ const excerptFor = (entry) => {
       books.forEach((book) => {
         const progress = progressPercent(book.progress);
         const row = document.createElement('span');
-        row.className = 'grid grid-cols-[3rem_1fr] gap-3 border-t border-zinc-200/70 pt-3 first:border-t-0 first:pt-0 dark:border-zinc-800/80';
+        row.className = 'grid min-w-0 grid-cols-[3rem_minmax(0,1fr)] gap-3 border-t border-zinc-200/70 pt-3 first:border-t-0 first:pt-0 dark:border-zinc-800/80';
 
         const cover = typeof book.cover === 'string' ? book.cover.replace(/^http:\/\//, 'https://') : '';
         if (cover) {
@@ -746,7 +806,7 @@ const excerptFor = (entry) => {
         return;
       }
 
-      const recentGames = Array.isArray(steam.recentGames) ? steam.recentGames.slice(0, 3) : [];
+      const recentGames = Array.isArray(steam.recentGames) ? steam.recentGames : [];
       renderSteamCard(steam);
       renderSteamGames(steam);
 
@@ -779,10 +839,10 @@ const excerptFor = (entry) => {
       const books = reading.books.slice(0, 3);
       const primary = books[0];
       const lastReadAt = formatTime(primary.lastReadAt);
-      const duration = formatSeconds(primary.readingTimeSeconds);
+      const duration = formatSeconds(reading.totalReadingTimeSeconds);
       const readingSummary = [
         lastReadAt ? `上次阅读：${lastReadAt}` : '上次阅读：暂无记录',
-        duration ? `累计 ${duration}` : '',
+        duration ? `总累计 ${duration}` : '',
       ].filter(Boolean).join(' · ');
 
       setOptionalText(wereadDetail, readingSummary);
