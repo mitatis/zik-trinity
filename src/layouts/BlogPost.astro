@@ -16,7 +16,7 @@ export interface Props {
   kicker?: string;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, readingTime = '5 min read', tags = [], kicker = 'Essay' } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, readingTime = '5 min read', tags = [], kicker = 'Article' } = Astro.props;
 
 // Fix for the canonicalURL creation
 let canonicalURL;
