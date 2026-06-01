@@ -55,6 +55,15 @@ const normalizeDiscordActivity = (activity = {}) => {
   }
 }
 
+const discordAvatarUrl = (user = {}) => {
+  const userId = normalizeText(user.id)
+  const avatar = normalizeText(user.avatar)
+  if (!userId || !avatar) return ''
+
+  const extension = avatar.startsWith('a_') ? 'gif' : 'png'
+  return `https://cdn.discordapp.com/avatars/${encodeURIComponent(userId)}/${encodeURIComponent(avatar)}.${extension}?size=128`
+}
+
 const getDiscordPresence = async () => {
   const userId = normalizeText(process.env.LANYARD_USER_ID)
   if (!userId) {
@@ -94,6 +103,14 @@ const getDiscordPresence = async () => {
     activeOnDesktop: Boolean(data.active_on_discord_desktop),
     activeOnMobile: Boolean(data.active_on_discord_mobile),
     activeOnWeb: Boolean(data.active_on_discord_web),
+    user: data.discord_user
+      ? {
+          id: normalizeText(data.discord_user.id),
+          username: normalizeText(data.discord_user.username),
+          displayName: normalizeText(data.discord_user.global_name || data.discord_user.display_name || data.discord_user.username),
+          avatarUrl: discordAvatarUrl(data.discord_user),
+        }
+      : null,
     activities,
     spotify: data.listening_to_spotify && data.spotify
       ? {
@@ -338,8 +355,13 @@ const normalizeBook = (book = {}, progress = {}) => {
     cover: normalizeText(book.cover),
     progress: Number.isFinite(progressValue) ? Math.max(0, Math.min(100, progressValue)) : null,
     lastReadAt,
-    readingTimeSeconds: (Number(progress.recordReadingTime || book.recordReadingTime || 0) || 0)
-      || ((Number(progress.readingTime || book.readingTime || 0) || 0) * 60),
+    readingTimeSeconds: Number(
+      progress.recordReadingTime
+      || book.recordReadingTime
+      || progress.readingTime
+      || book.readingTime
+      || 0
+    ) || 0,
   }
 }
 
@@ -357,6 +379,7 @@ const getWereadReading = async () => {
     const limit = Math.max(1, Math.min(6, Number(process.env.WEREAD_BOOK_LIMIT || 3)))
     const candidateLimit = Math.max(limit, Math.min(24, Number(process.env.WEREAD_CANDIDATE_LIMIT || 12)))
     const minReadingMinutes = Math.max(0, Number(process.env.WEREAD_MIN_READING_MINUTES || 10) || 0)
+    const minProgress = Math.max(0, Math.min(100, Number(process.env.WEREAD_MIN_PROGRESS || 1) || 0))
     const minReadingSeconds = minReadingMinutes * 60
     const recentBooks = extractBooks(shelf)
       .filter((book) => normalizeText(book.bookId || book.bookid || book.id))
@@ -375,12 +398,14 @@ const getWereadReading = async () => {
     }))
     const displayBooks = books
       .filter((book) => minReadingSeconds === 0 || book.readingTimeSeconds >= minReadingSeconds)
+      .filter((book) => minProgress === 0 || (book.progress !== null && book.progress >= minProgress))
       .slice(0, limit)
 
     return {
       configured: true,
       books: displayBooks,
       minReadingMinutes,
+      minProgress,
       updatedAt: new Date().toISOString(),
     }
   } catch (error) {
