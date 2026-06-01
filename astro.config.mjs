@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react'; // Add this line
+import rehypeImageCaptions from './src/utils/rehype-image-captions.mjs';
 
 // Determine site URL based on environment
 const getSiteURL = () => {
@@ -26,6 +27,9 @@ export default defineConfig({
     })
   ],
   site: getSiteURL(),
+  markdown: {
+    rehypePlugins: [rehypeImageCaptions],
+  },
   integrations: [
     tailwind(),
     react(),

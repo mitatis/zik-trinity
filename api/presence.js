@@ -215,7 +215,7 @@ const normalizeSteamGame = (game = {}) => {
 }
 
 const getSteamRecentGames = async (apiKey, steamId) => {
-  const limit = Math.max(1, Math.min(10, Number(process.env.STEAM_RECENT_LIMIT || 3)))
+  const limit = Math.max(1, Math.min(10, Number(process.env.STEAM_RECENT_LIMIT || 6)))
   const params = new URLSearchParams({
     key: apiKey,
     steamid: steamId,
@@ -343,6 +343,31 @@ const extractProgress = (payload) => {
   ]) || {}
 }
 
+const getWereadReadingStats = async () => {
+  try {
+    const stats = await callWeread('/readdata/detail', { mode: 'overall' })
+    const totalReadTime = Number(getNested(stats, [
+      ['totalReadTime'],
+      ['data', 'totalReadTime'],
+      ['result', 'totalReadTime'],
+      ['response', 'totalReadTime'],
+    ]) || 0) || 0
+    const readDays = Number(getNested(stats, [
+      ['readDays'],
+      ['data', 'readDays'],
+      ['result', 'readDays'],
+      ['response', 'readDays'],
+    ]) || 0) || 0
+
+    return {
+      totalReadingTimeSeconds: Math.max(0, totalReadTime),
+      readDays: Math.max(0, readDays),
+    }
+  } catch {
+    return null
+  }
+}
+
 const normalizeBook = (book = {}, progress = {}) => {
   const bookId = normalizeText(book.bookId || book.bookid || book.id)
   const lastReadAt = toIso(progress.updateTime || book.readUpdateTime || book.updateTime)
@@ -375,7 +400,10 @@ const getWereadReading = async () => {
   }
 
   try {
-    const shelf = await callWeread('/shelf/sync')
+    const [shelf, readingStats] = await Promise.all([
+      callWeread('/shelf/sync'),
+      getWereadReadingStats(),
+    ])
     const limit = Math.max(1, Math.min(6, Number(process.env.WEREAD_BOOK_LIMIT || 3)))
     const candidateLimit = Math.max(limit, Math.min(24, Number(process.env.WEREAD_CANDIDATE_LIMIT || 12)))
     const minReadingMinutes = Math.max(0, Number(process.env.WEREAD_MIN_READING_MINUTES || 10) || 0)
@@ -404,6 +432,8 @@ const getWereadReading = async () => {
     return {
       configured: true,
       books: displayBooks,
+      totalReadingTimeSeconds: readingStats?.totalReadingTimeSeconds ?? null,
+      readDays: readingStats?.readDays ?? null,
       minReadingMinutes,
       minProgress,
       updatedAt: new Date().toISOString(),
