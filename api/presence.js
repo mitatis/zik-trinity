@@ -355,8 +355,13 @@ const normalizeBook = (book = {}, progress = {}) => {
     cover: normalizeText(book.cover),
     progress: Number.isFinite(progressValue) ? Math.max(0, Math.min(100, progressValue)) : null,
     lastReadAt,
-    readingTimeSeconds: (Number(progress.recordReadingTime || book.recordReadingTime || 0) || 0)
-      || ((Number(progress.readingTime || book.readingTime || 0) || 0) * 60),
+    readingTimeSeconds: Number(
+      progress.recordReadingTime
+      || book.recordReadingTime
+      || progress.readingTime
+      || book.readingTime
+      || 0
+    ) || 0,
   }
 }
 

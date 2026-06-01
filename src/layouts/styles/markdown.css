@@ -66,12 +66,29 @@ article {
   .poem-container {
     text-align: center;
   }
-  .poem-body p {
-    margin: 0 0 0.85rem 0 !important;
-  }
   .poem-body{
     font-family: var(--font-serif-cn);
+    font-size: clamp(1.125rem, 0.65vw + 0.95rem, 1.35rem);
+    line-height: 2.18;
     color: #3f3f46;
+  }
+  .poem-body .poem-content {
+    max-width: none;
+  }
+  .poem-body p {
+    margin: 0 0 clamp(2.5rem, 5vw, 3.75rem) 0 !important;
+    font-family: var(--font-serif-cn);
+    line-height: 2.18 !important;
+    white-space: pre-line;
+  }
+  .poem-body p:first-child {
+    margin-top: 0 !important;
+  }
+  .poem-body p:last-child {
+    margin-bottom: 0 !important;
+  }
+  .poem-body br {
+    display: none;
   }
   .poem-head{
     font-family: var(--font-serif-cn);
