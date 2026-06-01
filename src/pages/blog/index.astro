@@ -71,7 +71,7 @@ const excerptFor = (entry) => {
                 <img
                   src={imageFor(featuredPost)}
                   alt={featuredPost.data.title}
-                  class="aspect-[4/3] h-full w-full object-cover grayscale transition duration-700 hover:grayscale-0"
+                  class="aspect-[4/3] h-full w-full object-cover transition duration-700 hover:scale-[1.02]"
                   loading="eager"
                 />
               </a>
@@ -126,7 +126,7 @@ const excerptFor = (entry) => {
                     <article class={`grid gap-5 py-7 ${imageFor(post) ? 'sm:grid-cols-[8rem_1fr]' : 'sm:grid-cols-[7rem_1fr]'}`}>
                       {imageFor(post) ? (
                         <a href={`/blog/${post.slug}/`} class="overflow-hidden border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
-                          <img src={imageFor(post)} alt={post.data.title} class="aspect-[4/3] w-full object-cover grayscale transition duration-500 hover:grayscale-0" loading="lazy" />
+                          <img src={imageFor(post)} alt={post.data.title} class="aspect-[4/3] w-full object-cover transition duration-500 hover:scale-[1.02]" loading="lazy" />
                         </a>
                       ) : (
                         <time datetime={post.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">

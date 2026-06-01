@@ -91,7 +91,7 @@ const pathFor = (entry) => entry.collection === 'journal'
           <article class={`grid gap-5 border-b border-zinc-200/80 py-7 dark:border-zinc-800 ${imageFor(entry) ? 'sm:grid-cols-[8rem_1fr]' : 'sm:grid-cols-[7rem_1fr]'}`}>
             {imageFor(entry) ? (
               <a href={pathFor(entry)} class="overflow-hidden border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
-                <img src={imageFor(entry)} alt={entry.data.title} class="aspect-[4/3] w-full object-cover grayscale transition duration-500 hover:grayscale-0" loading="lazy" />
+                <img src={imageFor(entry)} alt={entry.data.title} class="aspect-[4/3] w-full object-cover transition duration-500 hover:scale-[1.02]" loading="lazy" />
               </a>
             ) : (
               <time datetime={entry.data.pubDate.toISOString()} class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
