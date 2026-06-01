@@ -4,17 +4,17 @@ import ThemeToggle from './ThemeToggle.astro';
 const navItems = [
   { text: '首页', href: '/' },
   { text: '文章', href: '/blog' },
-  { text: '日志', href: '/journal' },
-  { text: '散诗集', href: '/poetry' },
-  { text: '项目', href: '/projects' },
   { text: '标签', href: '/tags' },
-  { text: '关于', href: '/about' },
+  { text: '散诗集', href: '/poetry' },
+  { text: '日志', href: '/journal' },
+  { text: '项目', href: '/projects' },
 ];
 
 
 // Get current path for active link highlighting
 const pathname = new URL(Astro.request.url).pathname;
 const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+const isAboutActive = isActivePath('/about');
 ---
 
 <header class="fixed left-0 right-0 top-0 z-40 border-b border-zinc-200/70 bg-zinc-50/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/85">
@@ -47,14 +47,20 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
 
     <nav class="hidden items-center justify-end gap-3 md:flex" aria-label="辅助导航">
       <a
-        href="/tags"
-        class="flex min-h-10 min-w-10 items-center justify-center rounded-full text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-        aria-label="浏览标签"
+        href="/about"
+        class={`relative flex overflow-hidden rounded-full p-1.5 transition-all duration-300 hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:focus:ring-zinc-700 sm:p-2 ${
+          isAboutActive ? 'text-teal-700 dark:text-teal-300' : 'text-zinc-700 dark:text-zinc-300'
+        }`}
+        aria-label="关于我"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="m20 20-3.5-3.5"></path>
-        </svg>
+        <span class="relative z-10 flex h-5 w-5 items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"></path>
+            <path d="M9 3h6v4H9z"></path>
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M8.5 17a4 4 0 0 1 7 0"></path>
+          </svg>
+        </span>
       </a>
       <ThemeToggle />
     </nav>
@@ -97,7 +103,23 @@ const isActivePath = (href: string) => href === '/' ? pathname === '/' : pathnam
         </a>
       )
     })}
-    <div class="pt-4 mobile-nav-item opacity-0 translate-y-4" style="transition-delay: 0.25s;">
+    <div class="flex items-center gap-3 pt-4 mobile-nav-item opacity-0 translate-y-4" style="transition-delay: 0.3s;">
+      <a
+        href="/about"
+        class={`relative flex overflow-hidden rounded-full p-1.5 transition-all duration-300 hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:focus:ring-zinc-700 sm:p-2 ${
+          isAboutActive ? 'text-teal-700 dark:text-teal-300' : 'text-zinc-600 dark:text-zinc-400'
+        }`}
+        aria-label="关于我"
+      >
+        <span class="relative z-10 flex h-5 w-5 items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"></path>
+            <path d="M9 3h6v4H9z"></path>
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M8.5 17a4 4 0 0 1 7 0"></path>
+          </svg>
+        </span>
+      </a>
       <ThemeToggle />
     </div>
   </nav>
