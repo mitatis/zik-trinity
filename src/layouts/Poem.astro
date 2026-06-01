@@ -68,7 +68,7 @@ const slug = Astro.url.pathname.split('/').filter(Boolean).pop() || ''; // Ensur
     
     <!-- Add the like button after the content -->
     
-    <div class="col-span-1 border-t border-zinc-200 pt-8 dark:border-zinc-800 md:col-span-3">
+    <div class="col-span-1 pt-8 md:col-span-3">
       <div class="flex flex-row items-center justify-center gap-4">
         <ShareButtons url={canonicalURL.toString()} title={title} /> <!-- Convert URL to string -->
       </div>
